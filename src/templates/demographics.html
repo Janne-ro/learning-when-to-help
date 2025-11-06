@@ -1,0 +1,33 @@
+<section class="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow">
+      <h2 class="text-2xl font-bold mb-3">Demographics</h2>
+      <form id="demographics-form">
+        <label>Gender:</label>
+        <select id="gender" required>
+          <option value="">--Select--</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Divers</option>
+          <option>Prefer not to answer</option>
+        </select><br><br>
+
+        <label>Age:</label>
+        <input type="number" id="age" min="18" max="99" required><br><br>
+
+        <label>Education Level:</label>
+        <select id="education" required>
+          <option value="">--Select--</option>
+          <option>High school</option>
+          <option>Bachelor’s</option>
+          <option>Master’s</option>
+          <option>Doctorate</option>
+          <option>Other</option>
+        </select><br><br>
+
+        <label>Primary National Culture:</label>
+        <input type="text" id="culture" required placeholder="e.g., Germany"><br><br>
+
+        <button id="demographics-btn" type="submit" style="
+          margin-top:1em;padding:8px 16px;background:#1976d2;color:white;border:none;
+          border-radius:8px;">Start Experiment</button>
+      </form>
+    </section>
