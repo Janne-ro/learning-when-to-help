@@ -1,108 +1,150 @@
 <div layout="row" layout-align="center center">
     <md-card layout="column" layout-align="center center" flex="auto" width="50%"> 
+
+        <!-- Head bar that shows throughout the whole pretest section -->
         <md-toolbar layout="row" layout-align="space-between center" layout-padding class="md-primary md-hue-2">
-                <div layout="column">
-                    <img src="src/assets/upf_logo_cut.JPG", style="width:100px;height:100px;">
-                </div>
-                <div layout="row" layout-align="center center">
-                    <label>Study on learning in a digital enviroment</label>
-                </div>
-                <div layout="column" layout-align="end end">
-                    <img src="src/assets/TIDE_cut.JPG", style="width:100px;height:100px;">
-                </div>
+            <div layout="column">
+                <img src="src/assets/upf_logo_cut.JPG", style="width:100px;height:100px;">
+            </div>
+            <div layout="row" layout-align="center center">
+                <label>Study on learning in a digital enviroment</label>
+            </div>
+            <div layout="column" layout-align="end end">
+                <img src="src/assets/TIDE_cut.JPG", style="width:100px;height:100px;">
+            </div>
         </md-toolbar>
-            <md-card-content layout-padding layout-margin ng-show="!start"> 
-                <label><font size="+3"><big>Terms of consent</font></big></label> 
-                <p>You can contact our data protection officer via <a href="mailto:datenschutz@uni-stuttgart.de">datenschutz@uni-stuttgart.de</a> directly at any time with questions about data protection law or your data subject rights.</p> 
-                <big>1. Processing of personal data and purposes of processing</big><br /> 
-                <p>a. Voluntarity</p> 
-                <p>Participation in this survey is voluntary. We want to point out that this is a scientific survey and that the data will be treated anonymously and in strict confidence. There is no risk by participating in this study. You are free to discontinue your participation at any time without incurring any disadvantage.</p> 
-                <p>b. Legal basis</p> 
-                <p>The legal basis of this study is built on the DSGVO and the Baden-Württemberg State Data Protection Act. The decision to participate in the survey is based on your consent Art. 6 Abs. 1 lit. a) DSGVO. The subsequent processing is based on Art. 6 Abs. 1 lit. e) in conjunction with Art. 6 Abs. 3 DSGVO and with § 13 Abs.1 of the Baden-Württemberg State Data Protection Act.</p> 
-                <p>c. Purpose, Research objective</p> 
-                <p>In general this research plans to investigate effects of culturally-aligned digital learning environments with the goal to gain greater insight into the inner workings of the interaction between humans and intelligent gamified tutoring systems. With your participation you directly help us with our research goal.</p> 
-                <big>2. Duration of storage</big><br /> 
-                <p>Information you provide will be stored in full until the end of the evaluation period in October 2023. Anonymized data records will be archived permanently and made available for subsequent scientific use, including by third parties.</p> 
-                <big>3. Confidentiality</big><br /> 
-                <p>Personal data (age, gender, etc.) will be collected during participation. All data you provide in this study will be used exclusively in anonymized form for research purposes or publications and kept confidential in accordance with the European Union (EU) General Data Protection Regulation (GDPR), i.e. without the data being traceable to a specific person or company.</p> 
-                <p>Subsequent uses of records and data will be subject to standardized data use policies that protect the anonymity of individuals and institutions. In all cases, uses of records and data are subject to the GDPR. Your data will not be disclosed to third parties or used for for-profit purposes. </p> 
-                <big>4. Your rights</big><br /> 
-                <p>You have the right to require the University of Stuttgart to inform you which personal data have been stored and/or to correct falsely stored data. </p> <ul> - Furthermore, you have the right to require the deletion of or the restriction of the use of your personal data as well as the right to object to their use.<br /> - If the use of the data is based on your consent (which is the case for data provided voluntarily), you have the right to withdraw your consent at any time by informing us of this withdrawal. However, on the basis of your initial consent, the data can be used until such time as the withdrawal of your consent reaches us. <br /> </ul> 
-                <p>In any of the above cases, please contact Janne Rotter via <a href="mailto:st172023@stud.uni-stuttgart.de">st172023@stud.uni-stuttgart.de</a></p> 
-                <p>You have the right to submit a complaint to the regulating body if you are of the opinion that the processing of your personal data violates legal provisions. <br> The body responsible is the Commissioner for the Protection of Privacy and Freedom of Information Baden-Württemberg. </p> 
-                <big>5. Data security</big><br /> 
-                <p>We use appropriate technical and organizational security measures to protect your data against accidental or intentional manipulation, partial or complete loss, destruction or against unauthorized access by third parties. Our security measures are continuously improved in line with technological developments.</p> 
-                <md-checkbox ng-click="start=true;"><b>I agree to this privacy statement regarding the usage of my data</b></md-checkbox> </md-card-content> <!-- <a href="mailto:jas@ic.ufal.br?Subject=Estudo%20sobre%20Ansiedade" target="_top">jas@ic.ufal.br</a> --> 
-            </md-card> 
-        </div> <!-- Begin with first MAI-AI--> 
-        <div layout="row" layout-align="center center" ng-show="start && !start2" class="bg"> <md-card layout="column" layout-align="center center" flex="auto" width="50%"> 
-            <md-card-title layout="column"> <h2>Demographics</h2> </md-card-title> 
-            <md-card-content> 
-                <p>For the following questions please choose what best fits you.</p> 
-                <form> <div layout="row"> 
+
+        <!-- Consent form -->
+        <md-card-content layout-padding layout-margin ng-show="!start"> 
+            <label><font size="+3"><big>Terms of consent</font></big></label> 
+            <p>You can contact our data protection officer via <a href="mailto:datenschutz@uni-stuttgart.de">datenschutz@uni-stuttgart.de</a> directly at any time with questions about data protection law or your data subject rights.</p> 
+            <big>1. Processing of personal data and purposes of processing</big><br /> 
+            <p>a. Voluntarity</p> 
+            <p>Participation in this survey is voluntary. We want to point out that this is a scientific survey and that the data will be treated anonymously and in strict confidence. There is no risk by participating in this study. You are free to discontinue your participation at any time without incurring any disadvantage.</p> 
+            <p>b. Legal basis</p> 
+            <p>The legal basis of this study is built on the DSGVO and the Baden-Württemberg State Data Protection Act. The decision to participate in the survey is based on your consent Art. 6 Abs. 1 lit. a) DSGVO. The subsequent processing is based on Art. 6 Abs. 1 lit. e) in conjunction with Art. 6 Abs. 3 DSGVO and with § 13 Abs.1 of the Baden-Württemberg State Data Protection Act.</p> 
+            <p>c. Purpose, Research objective</p> 
+            <p>In general this research plans to investigate effects of culturally-aligned digital learning environments with the goal to gain greater insight into the inner workings of the interaction between humans and intelligent gamified tutoring systems. With your participation you directly help us with our research goal.</p> 
+            <big>2. Duration of storage</big><br /> 
+            <p>Information you provide will be stored in full until the end of the evaluation period in October 2023. Anonymized data records will be archived permanently and made available for subsequent scientific use, including by third parties.</p> 
+            <big>3. Confidentiality</big><br /> 
+            <p>Personal data (age, gender, etc.) will be collected during participation. All data you provide in this study will be used exclusively in anonymized form for research purposes or publications and kept confidential in accordance with the European Union (EU) General Data Protection Regulation (GDPR), i.e. without the data being traceable to a specific person or company.</p> 
+            <p>Subsequent uses of records and data will be subject to standardized data use policies that protect the anonymity of individuals and institutions. In all cases, uses of records and data are subject to the GDPR. Your data will not be disclosed to third parties or used for for-profit purposes. </p> 
+            <big>4. Your rights</big><br /> 
+            <p>You have the right to require the University of Stuttgart to inform you which personal data have been stored and/or to correct falsely stored data. </p> <ul> - Furthermore, you have the right to require the deletion of or the restriction of the use of your personal data as well as the right to object to their use.<br /> - If the use of the data is based on your consent (which is the case for data provided voluntarily), you have the right to withdraw your consent at any time by informing us of this withdrawal. However, on the basis of your initial consent, the data can be used until such time as the withdrawal of your consent reaches us. <br /> </ul> 
+            <p>In any of the above cases, please contact Janne Rotter via <a href="mailto:st172023@stud.uni-stuttgart.de">st172023@stud.uni-stuttgart.de</a></p> 
+            <p>You have the right to submit a complaint to the regulating body if you are of the opinion that the processing of your personal data violates legal provisions. <br> The body responsible is the Commissioner for the Protection of Privacy and Freedom of Information Baden-Württemberg. </p> 
+            <big>5. Data security</big><br /> 
+            <p>We use appropriate technical and organizational security measures to protect your data against accidental or intentional manipulation, partial or complete loss, destruction or against unauthorized access by third parties. Our security measures are continuously improved in line with technological developments.</p> 
+            <md-checkbox ng-click="start=true;">
+                <b>I agree to this privacy statement regarding the usage of my data</b>
+            </md-checkbox> 
+        </md-card-content>
+    </md-card> 
+</div> 
+
+<!-- Get demographic information --> 
+<div layout="row" layout-align="center center" ng-show="start && !start2" class="bg"> <md-card layout="column" layout-align="center center" flex="auto" width="50%"> 
+    <md-card-title layout="column"> <h2>Demographics</h2> </md-card-title> 
+        <md-card-content> 
+            <p>For the following questions please choose what best fits you.</p> 
+            <form> 
+                <div layout="row"> 
+
+                    <!-- Get gender -->
                     <md-input-container class="md-block" flex-gt-sm>
                         <label ng-required="true">Gender</label>
                         <md-select ng-required="true" ng-model="gender">
                             <md-option ng-repeat="g in ['Male','Female','Divers','Prefer not to answer']" ng-value="g">
-                            {{g}}
+                                {{g}}
                             </md-option>
                         </md-select>
-                        </md-input-container>
+                    </md-input-container>
 
-                        <md-input-container class="md-block" flex-gt-sm>
+                    <!-- Get age -->
+                    <md-input-container class="md-block" flex-gt-sm>
                         <label ng-required="true">Age</label>
                         <md-select ng-required="true" ng-model="age">
                             <md-option ng-repeat="a in ['Younger than 18','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','Older than 55']" ng-value="a">
-                            {{a}}
+                                {{a}}
                             </md-option>
                         </md-select>
-                        </md-input-container>
+                    </md-input-container>
 
-                        <md-input-container class="md-block" flex-gt-sm>
+                    <!-- Get educational level -->
+                    <md-input-container class="md-block" flex-gt-sm>
                         <label ng-required="true">Educational level</label>
                         <md-select ng-required="true" ng-model="education">
                             <md-option ng-repeat="e in ['Primary or lower education','Lower secondary education (usually grades 7, 8, 9)','Upper secondary education (usually grades 10, 11, 12)','Bachelor or equivalent', 'Master or equivalent', 'Doctorate or equivalent', 'Different']" ng-value="e">
-                            {{e}}
+                                {{e}}
                             </md-option>
                         </md-select>
-                        </md-input-container>
- 
+                    </md-input-container>
                 </div> 
             </form> 
-            <md-checkbox ng-click="start2=true; setTime(); continueToPretest()" ng-disabled="!(gender && age && education)"><b>Continue</b></md-checkbox> 
+
+            <!-- Continue button, only enabled when all questions are answered -->
+            <md-checkbox ng-click="start2=true; continueToPretest()" ng-disabled="!(gender && age && education)">
+                <b>Continue</b>
+            </md-checkbox> 
             <h1 style="color: azure">.</h1> 
             <h1 style="color: azure">.</h1> 
         </md-card-content> 
     </md-card> 
 </div> 
+
+<!-- Pretest MAI-AI questions (only AI literacy, Metacognitive Awareness and Metacognitive Regulation)-->
 <div layout="row" layout-align="center center" ng-show="start2" class="bg"> 
     <md-card layout="column" layout-align="center center" flex="auto" width="50%"> 
-        <md-card-title layout="column"> <h2>Initial Questionnaire</h2> </md-card-title> 
-        <md-card-content> <form> 
-            <p>Additionally please answer the questions below by marking the option that best suit your understanding.</p> 
-            <div ng-repeat="q in questions"> <h3>{{q}}</h3> 
-                <div layout="row"> 
-                    <p>Not at all</p> 
-                    <md-radio-group ng-model="answers[$index]" layout="row" class="md-primary"> 
-                        <label></label> <md-radio-button value="1" aria-label="option 1"></md-radio-button> 
-                        <label></label> <md-radio-button value="2" aria-label="option 2"></md-radio-button> 
-                        <label></label> <md-radio-button value="3" aria-label="option 3"></md-radio-button> 
-                        <label></label> <md-radio-button value="4" aria-label="option 4"></md-radio-button> 
-                        <label></label> <md-radio-button value="5" aria-label="option 4"></md-radio-button> 
-                    </md-radio-group> 
-                    <p>Very much so</p> 
-                </div> 
-            </p> 
-        </p> 
-        <md-divider></md-divider> 
-    </div> 
-    <md-button ng-click="processAnswers()" type="submit" class="md-raised md-primary">Next stage</md-button> 
-    <!-- Error message -->
-    <span ng-if="msg" style="color: #8B0000; font-weight: 600; margin-left: 10px;">
-    {{msg}}
-    </span> 
-</form> 
-</md-card-content> 
-</md-card> 
+        <md-card-title layout="column"> 
+            <h2>Initial Questionnaire</h2> 
+        </md-card-title> 
+        <md-card-content> 
+            <form>
+                <p style="text-align:center;">Additionally please answer the questions below by marking the option that best suits your understanding.</p> 
+                <div ng-repeat="q in questions" layout="column" layout-align="center center" style="text-align:center; width:100%; padding: 16px 0;">
+
+                    <!-- Divider before the first question -->
+                    <md-divider ng-if="$first" style="width:80%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
+                    <h3>{{q}}</h3> 
+          
+                    <div layout="row" layout-align="center center" style="align-items:center; margin-top: 8px;">
+                        <!-- Conditional left label -->
+                        <p style="margin-right: 10px;">
+                            <span ng-if="$index === 0">Pessimistic (1)</span>
+                            <span ng-if="$index === 1">Detrimental</span>
+                            <span ng-if="$index > 1">Not at all</span>
+                        </p>
+
+                        <!-- Radio buttons -->
+                        <md-radio-group ng-model="answers[$index]" layout="row" class="md-primary"> 
+                            <md-radio-button value="1" aria-label="option 1"></md-radio-button> 
+                            <md-radio-button value="2" aria-label="option 2"></md-radio-button> 
+                            <md-radio-button value="3" aria-label="option 3"></md-radio-button> 
+                            <md-radio-button value="4" aria-label="option 4"></md-radio-button> 
+                            <md-radio-button value="5" aria-label="option 5"></md-radio-button> 
+                        </md-radio-group> 
+
+                        <!-- Conditional right label -->
+                        <p style="margin-left: 10px;">
+                            <span ng-if="$index === 0">Optimistic (5)</span>
+                            <span ng-if="$index === 1">Beneficial</span>
+                            <span ng-if="$index > 1">Very much so</span>
+                        </p>
+                    </div>
+
+                    <!-- Subtle grey divider between questions -->
+                    <md-divider style="width:80%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
+                </div>
+
+                <!-- Button and error message on same line -->
+                <div layout="row" layout-align="left center" style="margin-top:20px; gap:10px;">
+                    <md-button ng-click="processAnswers()" type="submit" class="md-raised md-primary">Next stage</md-button> 
+
+                    <!-- Error message right next to button -->
+                    <span ng-if="msg" style="color: #8B0000; font-weight: 600;">{{msg}}</span> 
+                </div>
+            </form> 
+        </md-card-content> 
+    </md-card> 
 </div> 
-</div>
