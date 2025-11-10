@@ -8,4 +8,4 @@ This project is currently in development.
 npm install concurrently --save-dev
 
 ## How to run
-Run npx serve .
+Run npm start

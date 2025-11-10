@@ -14,10 +14,10 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http) {
   //Display different messages based on test type
   if (testType === "never") {
     $scope.aiMessage = "You are not allowed to use generative AI for this task";
-    $scope.allowAI = false;
+    $scope.allowAI = true; //--> should usually be set to false (for testing always true)
   } else if (testType === "RL") {
     $scope.aiMessage = "You are currently not allowed to use generative AI for this task. In the future this might change";
-    $scope.allowAI = false;
+    $scope.allowAI = true; //--> should usually be set to false (for testing always true)
   } else if (testType === "always") {
     $scope.aiMessage = "You are allowed to use generative AI for this task";
     $scope.allowAI = true;
@@ -46,17 +46,17 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http) {
     $scope.llm.error = '';
     $scope.llm.response = '';
 
-    $http.post('/api/ask-ai', { prompt: text })
-      .then(function(res) {
+    // inside Task1Ctrl
+    const backendUrl = 'http://localhost:8080/api/ask-ai'; // /change if backend uses different port
+    $http.post(backendUrl, { prompt: text })
+    .then(function(res) {
         $scope.llm.response = res.data.reply || '(no reply)';
-      })
-      .catch(function(err) {
-        console.error(err);
-        $scope.llm.error = err.data?.error || 'AI service error';
-      })
-      .finally(function() {
-        $scope.llm.loading = false;
-      });
+    })
+    .catch(function(err) {
+        console.error('LLM call error:', err);
+        $scope.llm.error = `Request failed: ${err.status} ${err.statusText} — ${JSON.stringify(err.data)}`;
+    });
+
   };
 
   // optionally a convenience to clear
