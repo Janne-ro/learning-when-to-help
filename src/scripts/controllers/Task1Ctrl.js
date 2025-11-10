@@ -8,17 +8,24 @@ app.controller('Task1Ctrl', function($scope, User, $location) {
   //Get test type (already implemented elsewhere)
   const testType = User.getTestType();
 
+  //Set allow ai flag based on test type
+  $scope.allowAI = false; 
+
   //Display different messages based on test type
   if (testType === "never") {
     $scope.aiMessage = "You are not allowed to use generative AI for this task";
+    $scope.allowAI = false;
   } else if (testType === "RL") {
-    $scope.aiMessage = "You are currently not allowed to use generative AI for this task. In the future you might be (a new tab will open if allowed)";
+    $scope.aiMessage = "You are currently not allowed to use generative AI for this task. In the future this might change";
+    $scope.allowAI = false;
   } else if (testType === "always") {
-    $scope.aiMessage = "You are allowed to use generative AI for this task (it's opened in a new tab)";
+    $scope.aiMessage = "You are allowed to use generative AI for this task";
+    $scope.allowAI = true;
     //Open AI tab (example dummy site)
-    window.open("https://chat.openai.com/?model=gpt-5", "_blank");
+    //window.open("https://chat.openai.com/?model=gpt-5", "_blank");
   } else {
     $scope.aiMessage = "AI usage status is undefined."; //Should never happen
+    $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
   }
 
   // Dummy task content

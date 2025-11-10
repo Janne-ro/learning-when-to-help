@@ -1,10 +1,40 @@
-.custom-toolbar {
+.headbar-tasks {
   min-height: 100px; /* increases vertical size */
   height: 100px;     /* optional, keeps it fixed */
   text-align: center;
 }
 
-.toolbar-text {
+.headbar-text {
   font-size: 1.4em;  /* slightly larger text */
   font-weight: 500;
+}
+
+/* Styles for the LLM interaction section */
+.llm-interaction-section {
+  border: 2px solid #5c6bc0; /* Matches md-primary md-hue-2 (Material Indigo 400) */
+  border-radius: 12px;
+  background-color: #f8f9fb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* Subtle hover effect */
+.llm-interaction-section:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Heading inside the section */
+.llm-interaction-section h4 {
+  color: #3f51b5; /* md-primary */
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* Text inside the section */
+.llm-interaction-section p {
+  color: #333;
+  margin-bottom: 10px;
 }

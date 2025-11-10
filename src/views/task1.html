@@ -2,9 +2,9 @@
   <md-content layout-padding>
 
     <!-- AI Usage Message -->
-    <md-toolbar class="md-primary md-hue-2 custom-toolbar" layout="row" layout-align="center center">
+    <md-toolbar class="md-primary md-hue-2 headbar-tasks" layout="row" layout-align="center center">
         <div>
-            <label class="toolbar-text">{{ aiMessage }}</label>
+            <label class="headbar-text">{{ aiMessage }}</label>
         </div>
     </md-toolbar>
 
@@ -18,6 +18,18 @@
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vel nibh et lorem
       congue vehicula. Integer tempor dolor at felis lacinia, ac egestas neque vehicula."
     </blockquote>
+
+    <!-- LLM Interaction Section (shown only if allowAI == true) -->
+    <div ng-if="allowAI" layout="column" layout-align="start stretch" class="llm-interaction-section" style="margin: 20px 0;">
+      <md-card>
+        <md-card-content>
+          <h4>AI Assistant</h4>
+          <p>Interact with the AI assistant below for hints, explanations, or writing support.</p>
+          <!-- The actual LLM interaction UI is managed by the controller -->
+          <div id="llm-interaction"></div>
+        </md-card-content>
+      </md-card>
+    </div>
 
     <!-- Example Dummy Questions -->
     <h4>Answer the following questions:</h4>
