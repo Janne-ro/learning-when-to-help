@@ -3,7 +3,7 @@
 //newTab.close();
 
 //Controller for Task 1
-app.controller('Task1Ctrl', function($scope, User, $location, $http) {
+app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
 
   //Get test type (already implemented elsewhere)
   const testType = User.getTestType();
@@ -28,45 +28,97 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http) {
     $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
   }
 
-  // LLM UI state
+  // LLM/chat state
   $scope.llm = {
     prompt: '',
-    response: '',
     loading: false,
     error: ''
   };
 
+  // Array of chat messages
+  // each message: { who: 'user'|'ai', text: '...' }
+  $scope.messages = [];
+
+  // Backend URL
+  var backendUrl = 'http://localhost:8080/api/ask-ai'; 
+
+  // helper: scroll to bottom
+  function scrollToBottom(delay) {
+    // give DOM a tick to render
+    $timeout(function() {
+      var el = document.getElementById('llm-messages');
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      }
+    }, delay || 50);
+  }
+
+  // Send message to LLM
   $scope.sendToLLM = function() {
-    const text = ($scope.llm.prompt || '').trim();
+    var text = ($scope.llm.prompt || '').trim();
     if (!text) {
-      $scope.llm.error = 'Please write a question or prompt.';
+      $scope.llm.error = 'Please type something to send.';
       return;
     }
+
+    // push user message immediately
+    $scope.messages.push({ who: 'user', text: text });
+
+    // clear input and set loading
+    $scope.llm.prompt = '';
     $scope.llm.loading = true;
     $scope.llm.error = '';
-    $scope.llm.response = '';
+    scrollToBottom(0);
 
-    // inside Task1Ctrl
-    const backendUrl = 'http://localhost:8080/api/ask-ai'; // /change if backend uses different port
+    // call backend
     $http.post(backendUrl, { prompt: text })
-    .then(function(res) {
-        $scope.llm.response = res.data.reply || '(no reply)';
+      .then(function(res) {
+        var reply = (res.data && res.data.reply) ? res.data.reply : '(no reply)';
+        $scope.messages.push({ who: 'ai', text: reply });
+      })
+      .catch(function(err) {
+        console.error('LLM call failed:', err);
+        var errMsg = (err && err.data && err.data.error) ? err.data.error : 'AI service error';
+        $scope.messages.push({ who: 'ai', text: 'Error: ' + errMsg });
+      })
+      .finally(function() {
         $scope.llm.loading = false;
-    })
-    .catch(function(err) {
-        console.error('LLM call error:', err);
-        $scope.llm.error = `Request failed: ${err.status} ${err.statusText} — ${JSON.stringify(err.data)}`;
-        $scope.llm.loading = false;
-    });
-
+        // ensure scroll after AI reply appears
+        scrollToBottom(120);
+      });
   };
 
-  // optionally a convenience to clear
+  // Enter to send, Shift+Enter newline
+  $scope.handleKeydown = function(event) {
+    if (event.keyCode === 13 && !event.shiftKey) {
+      event.preventDefault();
+      $scope.sendToLLM();
+    }
+  };
+
+  // clear input (button)
   $scope.clearLLM = function() {
     $scope.llm.prompt = '';
-    $scope.llm.response = '';
     $scope.llm.error = '';
   };
+
+  // clear whole conversation
+  $scope.clearConversation = function() {
+    $scope.messages = [];
+    $scope.llm.prompt = '';
+    $scope.llm.error = '';
+  };
+
+  // focus input convenience
+  $scope.focusInput = function() {
+    $timeout(function() {
+      var ta = document.querySelector('.chat-input textarea');
+      if (ta) ta.focus();
+    }, 10);
+  };
+
+  // initial scroll
+  $timeout(scrollToBottom, 200);
 
   // Dummy task content
   $scope.questions = [

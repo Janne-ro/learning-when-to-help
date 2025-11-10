@@ -19,40 +19,98 @@
       congue vehicula. Integer tempor dolor at felis lacinia, ac egestas neque vehicula."
     </blockquote>
 
-    <!-- LLM Interaction Section (shown only if allowAI == true) -->
-    <div ng-if="allowAI" class="llm-interaction-section" layout="column" layout-align="start stretch" style="margin:20px 0;">
-    <md-card>
-        <md-card-content>
-        <h4>AI Assistant</h4>
-        <p>Interact with the AI assistant below for hints, explanations, or writing support.</p>
+<!-- LLM Interaction Section (shown only if allowAI == true) -->
+<div ng-if="allowAI" class="llm-interaction-section" layout="column" layout-align="start stretch">
 
-        <md-input-container class="md-block">
-            <label>Ask the assistant</label>
-            <textarea ng-model="llm.prompt" rows="3"></textarea>
+  <!-- chat wrapper with border and background -->
+  <div class="chat-wrapper">
+
+    <!-- header -->
+    <div layout="row" layout-align="space-between center" style="margin-bottom:8px;">
+      <h4 style="margin:0;">AI Assistant</h4>
+      <!-- clear conversation button -->
+      <div>
+        <md-button class="md-raised md-warn" ng-click="clearConversation()" aria-label="Clear conversation">
+          Clear conversation
+        </md-button>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <!-- messages -->
+      <div id="llm-messages" class="chat-messages">
+
+        <!-- message rows with avatar + bubble -->
+        <div ng-repeat="m in messages track by $index"
+             class="message-row"
+             ng-class="{'from-user': m.who === 'user', 'from-ai': m.who === 'ai'}"
+             style="display:flex; align-items:flex-end; gap:8px;">
+
+          <!-- AI message (left) -->
+          <div ng-if="m.who === 'ai'" style="display:flex; align-items:flex-end; gap:8px;">
+            <!-- avatar -->
+            <div class="avatar" style="min-width:36px; height:36px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:600;
+                 background:#e8ecff; color:#1f2b66; flex-shrink:0;">
+              AI
+            </div>
+
+            <!-- bubble -->
+            <div class="message ai" style="max-width:78%;">
+              <span ng-bind="m.text"></span>
+            </div>
+          </div>
+
+          <!-- User message (right) -->
+          <div ng-if="m.who === 'user'" style="display:flex; align-items:flex-end; gap:8px; margin-left:auto;">
+            <!-- bubble -->
+            <div class="message user" style="max-width:78%;">
+              <span ng-bind="m.text"></span>
+            </div>
+
+            <!-- avatar -->
+            <div class="avatar" style="min-width:36px; height:36px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:600;
+                 background:#3f51b5; color:#fff; flex-shrink:0;">
+              You
+            </div>
+          </div>
+        </div>
+
+        <!-- typing indicator -->
+        <div class="message-row" ng-if="llm.loading" style="display:flex; align-items:flex-end; gap:8px;">
+          <div style="display:flex; align-items:flex-end; gap:8px;">
+            <div class="avatar" style="min-width:36px; height:36px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:600;
+                 background:#e8ecff; color:#1f2b66; flex-shrink:0;">
+              AI
+            </div>
+            <div class="message ai typing" style="max-width:78%;">AI is typing…</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- input -->
+      <div class="chat-input" style="display:flex; gap:8px; align-items:center; margin-top:8px;">
+        <md-input-container class="md-block" style="flex:1; margin:0;">
+          <label>Write a message (Enter to send, Shift+Enter for newline)</label>
+          <textarea ng-model="llm.prompt" ng-keydown="handleKeydown($event)" rows="2"></textarea>
         </md-input-container>
 
-        <div layout="row" layout-align="start center" style="gap:10px; margin-top:8px;">
-            <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading">
-            {{ llm.loading ? 'Thinking...' : 'Ask' }}
-            </md-button>
-            <md-button class="md-raised" ng-click="clearLLM()" ng-disabled="llm.loading">Clear</md-button>
-            <md-progress-linear md-mode="indeterminate" ng-show="llm.loading" style="flex:1; margin-left: 8px;"></md-progress-linear>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading" aria-label="Send message">
+            {{ llm.loading ? 'Thinking...' : 'Send' }}
+          </md-button>
+
+          <md-button class="md-raised" ng-click="clearLLM()" ng-disabled="llm.loading" aria-label="Clear input">
+            Clear
+          </md-button>
         </div>
-
-        <div ng-if="llm.error" style="color:#b00020; margin-top:10px;">
-            {{ llm.error }}
-        </div>
-
-        <md-card ng-if="llm.response" style="margin-top:12px; background:#fafafa;">
-            <md-card-content>
-            <strong>AI:</strong>
-            <p style="white-space:pre-wrap;">{{ llm.response }}</p>
-            </md-card-content>
-        </md-card>
-
-        </md-card-content>
-    </md-card>
+      </div>
     </div>
+
+  </div> <!-- end chat-wrapper -->
+
+</div>
+
 
     <!-- Example Dummy Questions -->
     <h4>Answer the following questions:</h4>
