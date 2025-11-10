@@ -51,10 +51,12 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http) {
     $http.post(backendUrl, { prompt: text })
     .then(function(res) {
         $scope.llm.response = res.data.reply || '(no reply)';
+        $scope.llm.loading = false;
     })
     .catch(function(err) {
         console.error('LLM call error:', err);
         $scope.llm.error = `Request failed: ${err.status} ${err.statusText} — ${JSON.stringify(err.data)}`;
+        $scope.llm.loading = false;
     });
 
   };
