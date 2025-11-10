@@ -1,0 +1,40 @@
+<div ng-controller="Task1Ctrl">
+  <md-content layout-padding>
+
+    <!-- AI Usage Message -->
+    <div layout="row" layout-align="center center" style="margin-bottom: 20px;">
+      <md-card style="padding: 15px; background: #eceff1; width: 100%; text-align: center;">
+        <h4>{{aiMessage}}</h4>
+      </md-card>
+    </div>
+
+    <!-- Task Instructions -->
+    <h3>Task 1: Lorem Ipsum Writing Exercise</h3>
+    <p>
+      Answer the questions based on the provided text:
+    </p>
+    <blockquote>
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vel nibh et lorem
+      congue vehicula. Integer tempor dolor at felis lacinia, ac egestas neque vehicula."
+    </blockquote>
+
+    <!-- Example Dummy Questions -->
+    <h4>Answer the following questions:</h4>
+    <div ng-repeat="q in questions track by $index" style="margin-bottom: 15px;">
+      <p><strong>Q{{$index + 1}}.</strong> {{q}}</p>
+      <md-input-container class="md-block">
+        <label>Your answer</label>
+        <input type="text" ng-model="answers[$index]" />
+      </md-input-container>
+    </div>
+
+    <!-- Button and error message on same line -->
+    <div layout="row" layout-align="left center" style="margin-top:20px; gap:10px;">
+        <md-button ng-click="submitTask()" type="submit" class="md-raised md-primary">Next stage</md-button> 
+
+        <!-- Error message right next to button -->
+        <span ng-if="msg" style="color: #8B0000; font-weight: 600;">{{msg}}</span> 
+    </div>
+
+  </md-content>
+</div>

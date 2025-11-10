@@ -16,7 +16,7 @@ app.controller('PretestCtrl', function($scope, $location, User) {
         //Save time when starting pretest
         const time = new Date().getTime(); 
         User.setStartTimePretest(time); 
-        console.log('Start time set:', time);
+        console.log('Pretest start time set:', time);
         
         //Save demographic data 
         User.setGender($scope.gender); 
@@ -46,11 +46,17 @@ app.controller('PretestCtrl', function($scope, $location, User) {
                 User.setTestType("RL");
             }
             User.setPre(ans);
-            console.log(random)
+
+            //Set time for starting first task
+            const time = new Date().getTime(); 
+            User.setStartTimeTask1(time); 
+            console.log('Task 1 start time set:', time);
 
             console.log(User.getResponse());
             // User.save();
-            $location.path("/home");
+
+            //Redirect to first task
+            $location.path("/task1");
         };
 
     };
