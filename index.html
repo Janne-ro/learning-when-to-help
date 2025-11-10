@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="learningEnvApp">
 <head>
-  <meta charset="UTF-8" />
-  <title>Digital Learning Environment</title>
+    <meta charset="UTF-8" />
+    <title>Digital Learning Environment</title>
 
-  <!-- Angular core -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <!-- Angular core -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 
-<!-- Angular required by Material -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <!-- Angular required by Material -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
 
-<!-- ngRoute (if used) -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <!-- ngRoute (if used) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
 
-<!-- Angular Material CSS & JS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.4/angular-material.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.4/angular-material.min.js"></script>
+    <!-- Angular Material CSS & JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.4/angular-material.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.4/angular-material.min.js"></script>
 
+    <!-- Link the favicon -->
+    <link rel="icon" href="src/assets/favicon.ico">
 
-  <link rel="icon" href="src/assets/favicon.ico">
+    <!-- Link the css-->
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body ng-cloak>
-  <div ng-view layout="column" layout-align="center stretch"></div>
+    <div ng-view layout="column" layout-align="center stretch"></div>
 
-  <!-- Load scripts -->
-  <script src="src/scripts/app.js"></script>
-  <script src="src/scripts/services.js"></script>
-  <script src="src/scripts/controllers/IndexCtrl.js"></script>
-  <script src="src/scripts/controllers/PretestCtrl.js"></script>
-  <script src="src/scripts/controllers/PosttestCtrl.js"></script>
-  <script src="src/scripts/controllers/Task1Ctrl.js"></script>
-  <script src="src/scripts/controllers/Task2Ctrl.js"></script>
-  <script src="src/scripts/controllers/Task3Ctrl.js"></script>
+    <!-- Load scripts -->
+    <script src="src/scripts/app.js"></script>
+    <script src="src/scripts/services.js"></script>
+    <script src="src/scripts/controllers/IndexCtrl.js"></script>
+    <script src="src/scripts/controllers/PretestCtrl.js"></script>
+    <script src="src/scripts/controllers/PosttestCtrl.js"></script>
+    <script src="src/scripts/controllers/Task1Ctrl.js"></script>
+    <script src="src/scripts/controllers/Task2Ctrl.js"></script>
+    <script src="src/scripts/controllers/Task3Ctrl.js"></script>
 </body>
 </html>

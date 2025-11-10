@@ -1,0 +1,10 @@
+.custom-toolbar {
+  min-height: 100px; /* increases vertical size */
+  height: 100px;     /* optional, keeps it fixed */
+  text-align: center;
+}
+
+.toolbar-text {
+  font-size: 1.4em;  /* slightly larger text */
+  font-weight: 500;
+}

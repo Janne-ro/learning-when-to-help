@@ -1,4 +1,4 @@
-var tutorServices = angular.module("tutor.services", []);
+var tutorServices = angular.module("learningEnvApp.services", []);
 
 tutorServices.service("User", function($http) {
     var resp = {

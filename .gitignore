@@ -1,0 +1,5 @@
+# .gitignore
+node_modules/
+.env
+
+#currently uses openrouter api

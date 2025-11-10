@@ -2,11 +2,12 @@
   <md-content layout-padding>
 
     <!-- AI Usage Message -->
-    <div layout="row" layout-align="center center" style="margin-bottom: 20px;">
-      <md-card style="padding: 15px; background: #eceff1; width: 100%; text-align: center;">
-        <h4>{{aiMessage}}</h4>
-      </md-card>
-    </div>
+    <md-toolbar class="md-primary md-hue-2 custom-toolbar" layout="row" layout-align="center center">
+        <div>
+            <label class="toolbar-text">{{ aiMessage }}</label>
+        </div>
+    </md-toolbar>
+
 
     <!-- Task Instructions -->
     <h3>Task 1: Lorem Ipsum Writing Exercise</h3>

@@ -1,5 +1,5 @@
 // with ngAnimate/ngAria included (recommended)
-var app = angular.module('learningEnvApp', ['ngMaterial', 'ngRoute', 'ngAnimate', 'ngAria', 'tutor.services']);
+var app = angular.module('learningEnvApp', ['ngMaterial', 'ngRoute', 'ngAnimate', 'ngAria', 'learningEnvApp.services']);
 
 // minification-safe config using array-annotation
 app.config(['$routeProvider', '$mdThemingProvider', function($routeProvider, $mdThemingProvider) {
