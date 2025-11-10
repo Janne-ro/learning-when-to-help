@@ -2,7 +2,10 @@
 This repository contains the code for my master thesis titled "Learning When to Help: A Reinforcement Learning Framework for Metacognitive AI Support in Education"
 
 ## Overview
-...
+This project is currently in development.
+
+## Installs
+npm install concurrently --save-dev
 
 ## How to run
 Run npx serve .

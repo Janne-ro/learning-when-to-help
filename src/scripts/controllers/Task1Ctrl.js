@@ -3,7 +3,7 @@
 //newTab.close();
 
 //Controller for Task 1
-app.controller('Task1Ctrl', function($scope, User, $location) {
+app.controller('Task1Ctrl', function($scope, User, $location, $http) {
 
   //Get test type (already implemented elsewhere)
   const testType = User.getTestType();
@@ -27,6 +27,44 @@ app.controller('Task1Ctrl', function($scope, User, $location) {
     $scope.aiMessage = "AI usage status is undefined."; //Should never happen
     $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
   }
+
+  // LLM UI state
+  $scope.llm = {
+    prompt: '',
+    response: '',
+    loading: false,
+    error: ''
+  };
+
+  $scope.sendToLLM = function() {
+    const text = ($scope.llm.prompt || '').trim();
+    if (!text) {
+      $scope.llm.error = 'Please write a question or prompt.';
+      return;
+    }
+    $scope.llm.loading = true;
+    $scope.llm.error = '';
+    $scope.llm.response = '';
+
+    $http.post('/api/ask-ai', { prompt: text })
+      .then(function(res) {
+        $scope.llm.response = res.data.reply || '(no reply)';
+      })
+      .catch(function(err) {
+        console.error(err);
+        $scope.llm.error = err.data?.error || 'AI service error';
+      })
+      .finally(function() {
+        $scope.llm.loading = false;
+      });
+  };
+
+  // optionally a convenience to clear
+  $scope.clearLLM = function() {
+    $scope.llm.prompt = '';
+    $scope.llm.response = '';
+    $scope.llm.error = '';
+  };
 
   // Dummy task content
   $scope.questions = [

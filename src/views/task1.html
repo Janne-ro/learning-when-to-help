@@ -20,15 +20,38 @@
     </blockquote>
 
     <!-- LLM Interaction Section (shown only if allowAI == true) -->
-    <div ng-if="allowAI" layout="column" layout-align="start stretch" class="llm-interaction-section" style="margin: 20px 0;">
-      <md-card>
+    <div ng-if="allowAI" class="llm-interaction-section" layout="column" layout-align="start stretch" style="margin:20px 0;">
+    <md-card>
         <md-card-content>
-          <h4>AI Assistant</h4>
-          <p>Interact with the AI assistant below for hints, explanations, or writing support.</p>
-          <!-- The actual LLM interaction UI is managed by the controller -->
-          <div id="llm-interaction"></div>
+        <h4>AI Assistant</h4>
+        <p>Interact with the AI assistant below for hints, explanations, or writing support.</p>
+
+        <md-input-container class="md-block">
+            <label>Ask the assistant</label>
+            <textarea ng-model="llm.prompt" rows="3"></textarea>
+        </md-input-container>
+
+        <div layout="row" layout-align="start center" style="gap:10px; margin-top:8px;">
+            <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading">
+            {{ llm.loading ? 'Thinking...' : 'Ask' }}
+            </md-button>
+            <md-button class="md-raised" ng-click="clearLLM()" ng-disabled="llm.loading">Clear</md-button>
+            <md-progress-linear md-mode="indeterminate" ng-show="llm.loading" style="flex:1; margin-left: 8px;"></md-progress-linear>
+        </div>
+
+        <div ng-if="llm.error" style="color:#b00020; margin-top:10px;">
+            {{ llm.error }}
+        </div>
+
+        <md-card ng-if="llm.response" style="margin-top:12px; background:#fafafa;">
+            <md-card-content>
+            <strong>AI:</strong>
+            <p style="white-space:pre-wrap;">{{ llm.response }}</p>
+            </md-card-content>
+        </md-card>
+
         </md-card-content>
-      </md-card>
+    </md-card>
     </div>
 
     <!-- Example Dummy Questions -->
