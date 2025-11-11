@@ -1,0 +1,136 @@
+<div layout="row" layout-align="center center">
+    <md-card layout="column" layout-align="center center" flex="auto" width="50%"> 
+
+        <!-- Head bar that shows throughout the whole pretest section -->
+        <md-toolbar layout="row" layout-align="space-between center" layout-padding class="md-primary md-hue-2">
+            <div layout="column">
+                <img src="src/assets/upf_logo_cut.JPG", style="width:100px;height:100px;">
+            </div>
+            <div layout="row" layout-align="center center">
+                <label>Study on learning in a digital enviroment</label>
+            </div>
+            <div layout="column" layout-align="end end">
+                <img src="src/assets/TIDE_cut.JPG", style="width:100px;height:100px;">
+            </div>
+        </md-toolbar>
+    </md-card>       
+</div> 
+
+<!-- Self-assessment page (before postquestionnaire) -->
+<div layout="row" layout-align="center center" ng-show="selfAssessment" class="bg">
+  <md-card layout="column" layout-align="center center" flex="auto" width="50%">
+    <md-card-title layout="column">
+      <h2>Reflection on Your Work</h2>
+    </md-card-title>
+
+    <md-card-content>
+      <form>
+        <p style="text-align:center;">Please reflect briefly on your performance in the previous task.</p>
+
+        <!-- Likert Scale Question -->
+        <div layout="column" layout-align="center center" style="text-align:center; width:100%; padding: 16px 0;">
+          <h3>How well do you think you did in the previous task?</h3>
+
+          <div layout="row" layout-align="center center" style="align-items:center; margin-top: 8px;">
+            <p style="margin-right: 10px;">Not well at all</p>
+            <md-radio-group ng-model="selfAssessmentScore" layout="row" class="md-primary">
+              <md-radio-button ng-repeat="n in [].constructor(10) track by $index" 
+                               value="{{$index + 1}}" aria-label="{{$index + 1}}">
+                {{$index + 1}}
+              </md-radio-button>
+            </md-radio-group>
+            <p style="margin-left: 10px;">Extremely well</p>
+          </div>
+        </div>
+
+        <!-- Free text reflection -->
+        <div layout="column" style="width:100%; margin-top:20px;">
+          <h3>Do you have any further reflections on your work with the system?</h3>
+          <md-input-container class="md-block" style="width:90%;">
+            <textarea ng-model="selfAssessmentReflection" 
+                      md-maxlength="500" rows="5" 
+                      placeholder="Write your reflections here..."></textarea>
+          </md-input-container>
+        </div>
+
+        <!-- Next Button -->
+        <div layout="row" layout-align="left center" style="margin-top:20px; gap:10px;">
+          <md-button ng-click="goToPosttest()" class="md-raised md-primary">Next</md-button>
+          <span ng-if="msg" style="color: #8B0000; font-weight: 600;">{{msg}}</span>
+        </div>
+      </form>
+    </md-card-content>
+  </md-card>
+</div>
+
+<!-- Posttest MAI-AI questions (only AI literacy, Metacognitive Awareness and Metacognitive Regulation)-->
+<div layout="row" layout-align="center center" ng-show="start" class="bg"> 
+    <md-card layout="column" layout-align="center center" flex="auto" width="50%"> 
+        <md-card-title layout="column"> 
+            <h2>Posttest Questionnaire</h2> 
+        </md-card-title> 
+        <md-card-content> 
+            <form>
+                <p style="text-align:center;">Please answer the questions below by marking the option that best suits you.</p> 
+                <div ng-repeat="q in questions" layout="column" layout-align="center center" style="text-align:center; width:100%; padding: 16px 0;">
+
+                    <!-- Divider before the first question -->
+                    <md-divider ng-if="$first" style="width:80%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
+                    <h3>{{q}}</h3> 
+          
+                    <div layout="row" layout-align="center center" style="align-items:center; margin-top: 8px;">
+                        <!-- Conditional left label -->
+                        <p style="margin-right: 10px;">
+                            <span ng-if="$index === 0">Pessimistic</span>
+                            <span ng-if="$index === 1">Detrimental</span>
+                            <span ng-if="$index > 1">Not at all</span>
+                        </p>
+
+                        <!-- Radio buttons -->
+                        <md-radio-group ng-model="answers[$index]" layout="row" class="md-primary"> 
+                            <md-radio-button value="1" aria-label="option 1"></md-radio-button> 
+                            <md-radio-button value="2" aria-label="option 2"></md-radio-button> 
+                            <md-radio-button value="3" aria-label="option 3"></md-radio-button> 
+                            <md-radio-button value="4" aria-label="option 4"></md-radio-button> 
+                            <md-radio-button value="5" aria-label="option 5"></md-radio-button> 
+                        </md-radio-group> 
+
+                        <!-- Conditional right label -->
+                        <p style="margin-left: 10px;">
+                            <span ng-if="$index === 0">Optimistic</span>
+                            <span ng-if="$index === 1">Beneficial</span>
+                            <span ng-if="$index > 1">Very much so</span>
+                        </p>
+                    </div>
+
+                    <!-- Subtle grey divider between questions -->
+                    <md-divider style="width:80%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
+                </div>
+
+                <!-- Button and error message on same line -->
+                <div layout="row" layout-align="left center" style="margin-top:20px; gap:10px;">
+                    <md-button ng-click="finsishSession()" type="submit" class="md-raised md-primary">Finish Session</md-button> 
+
+                    <!-- Error message right next to button -->
+                    <span ng-if="msg" style="color: #8B0000; font-weight: 600;">{{msg}}</span> 
+                </div>
+            </form> 
+        </md-card-content> 
+    </md-card> 
+
+    <!-- Thank You Page -->
+    <div layout="row" layout-align="center center" ng-show="thankYou" class="bg">
+    <md-card layout="column" layout-align="center center" flex="auto" width="50%">
+        <md-card-title layout="column">
+        <h2>Thank you for participating in the experiment!</h2>
+        </md-card-title>
+
+        <md-card-content layout="column" layout-align="center center" style="text-align:center;">
+        <p style="font-size: 16px; margin-top: 20px;">
+            Your data has been saved. Please call the experiment supervisor and do not close this page.
+        </p>
+        </md-card-content>
+    </md-card>
+    </div>
+
+</div> 

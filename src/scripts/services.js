@@ -24,7 +24,8 @@ tutorServices.service("User", function($http) {
         pre: [],
         post: [],
         //Self evaluation and performance for the last task
-        selfEval: 0,
+        selfEvalScore: 0,
+        selfEvalReflection: "",
         performanceSelfTask: 0
     };
 
@@ -83,8 +84,11 @@ tutorServices.service("User", function($http) {
     this.getPost = function() { return resp.post; };
 
     //Self evaluation and performance
-    this.setSelfEval = function(value) { resp.selfEval = value; };
-    this.getSelfEval = function() { return resp.selfEval; };
+    this.setSelfEvalScore = function(value) { resp.selfEvalScore = value; };
+    this.getSelfEvalScore = function() { return resp.selfEvalScore; };
+
+    this.setSelfEvalReflection = function(value) { resp.selfEvalReflection = value; };
+    this.getSelfEvalReflection = function() { return resp.selfEvalReflection; };
 
     this.setPerformanceSelfTask = function(value) { resp.performanceSelfTask = value; };
     this.getPerformanceSelfTask = function() { return resp.performanceSelfTask; };
