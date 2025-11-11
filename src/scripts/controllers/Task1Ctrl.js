@@ -127,21 +127,39 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
 
   // Dummy task content
   $scope.questions = [
-    "What is the main idea of the given paragraph?",
-    "How would you apply this concept in a real-world scenario?",
-    "Did you find this task easy or challenging? Why?"
-  ];
+  "What is the main idea of the given paragraph?",
+  "How would you apply this concept in a real-world scenario?",
+  "Did you find this task easy or challenging? Why?"
+];
 
-  $scope.answers = [];
+$scope.correctAnswers = [
+  "42",
+  "42",
+  "42"
+];
 
-  // Simple submission handler
-  $scope.submitTask = function() {
-    if ($scope.answers.length < $scope.questions.length || $scope.answers.some(a => !a)) {
-        $scope.msg = "Please answer all questions!"
-        return;
-    }else{
+$scope.messagesQuestionsIncorrect = [];
 
-    //Save user interaction with LLM for task 1
+$scope.answers = [];
+
+// Simple submission handler
+$scope.submitTask = function() {
+  if ($scope.answers.length < $scope.questions.length || $scope.answers.some(a => !a)) {
+    $scope.msg = "Please answer all questions!";
+    return;
+  } 
+  else if ($scope.answers.some((answer, index) => answer !== $scope.correctAnswers[index])) {
+    // If one or multiple answers are incorrect
+    $scope.messagesQuestionsIncorrect = $scope.answers.map((answer, index) => {
+      return answer !== $scope.correctAnswers[index]
+        ? "Your answer is incorrect. Please try again."
+        : "";
+    });
+    $scope.msg = "One or more answers are incorrect. Please review and try again.";
+    return;
+  } 
+  else {
+    // All answers are correct
     User.setQueriesTask1(humanAIInteraction);
 
     console.log("Task 1 answers:", $scope.answers);
@@ -151,8 +169,7 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
 
     // Continue to task 2
     $location.path("/task2");
+  }
+};
 
-    }
-
-  };
 });

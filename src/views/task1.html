@@ -92,10 +92,16 @@
     <h4>Answer the following questions:</h4>
     <div ng-repeat="q in questions track by $index" style="margin-bottom: 15px;">
       <p><strong>Q{{$index + 1}}.</strong> {{q}}</p>
+      
       <md-input-container class="md-block">
         <label>Your answer</label>
         <input type="text" ng-model="answers[$index]" />
       </md-input-container>
+
+      <!-- Show incorrect message only if it exists -->
+      <p ng-if="messagesQuestionsIncorrect[$index]" style="color: #8B0000; font-weight: 500; margin-top: -5px;">
+        {{messagesQuestionsIncorrect[$index]}}
+      </p>
     </div>
 
     <!-- Button and error message on same line -->
