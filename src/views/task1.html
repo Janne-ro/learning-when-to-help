@@ -22,12 +22,12 @@
 <!-- LLM Interaction Section (shown only if allowAI == true) -->
 <div ng-if="allowAI" class="llm-interaction-section" layout="column" layout-align="start stretch">
 
-  <!-- chat wrapper with border and background -->
-  <div class="chat-wrapper" style="padding:12px; border:2px solid #5c6bc0; border-radius:12px; background:#f8f9fb; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+  <!-- chat wrapper with background (no duplicate border) -->
+  <div class="chat-wrapper">
 
     <!-- header -->
-    <div layout="row" layout-align="space-between center" style="margin-bottom:8px;">
-      <h4 style="margin:0;">AI Assistant</h4>
+    <div class="chat-header" layout="row" layout-align="space-between center">
+      <h4>AI Assistant</h4>
       <!-- clear conversation button -->
       <div>
         <md-button class="md-raised md-warn" ng-click="clearConversation()" aria-label="Clear conversation">
@@ -43,65 +43,41 @@
         <!-- message rows with avatar + bubble -->
         <div ng-repeat="m in messages track by $index"
              class="message-row"
-             ng-class="{'from-user': m.who === 'user', 'from-ai': m.who === 'ai'}"
-             style="display:flex; align-items:flex-end; gap:8px;">
+             ng-class="{'user': m.who === 'user', 'ai': m.who === 'ai'}">
 
-          <!-- AI message (left) -->
-          <div ng-if="m.who === 'ai'" style="display:flex; align-items:flex-end; gap:8px;">
-            <!-- avatar -->
-            <div class="avatar" style="min-width:36px; height:36px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:600;
-                 background:#e8ecff; color:#1f2b66; flex-shrink:0;">
-              AI
-            </div>
-
-            <!-- bubble -->
-            <div class="message ai" style="max-width:78%;">
-              <span ng-bind="m.text"></span>
-            </div>
+          <!-- avatar (position controlled by .message-row.{ai|user} via flex-direction) -->
+          <div class="avatar" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
+            <span ng-if="m.who === 'ai'">AI</span>
+            <span ng-if="m.who === 'user'">You</span>
           </div>
 
-          <!-- User message (right) -->
-          <div ng-if="m.who === 'user'" style="display:flex; align-items:flex-end; gap:8px; margin-left:auto;">
-            <!-- bubble -->
-            <div class="message user" style="max-width:78%;">
-              <span ng-bind="m.text"></span>
-            </div>
-
-            <!-- avatar -->
-            <div class="avatar" style="min-width:36px; height:36px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:600;
-                 background:#3f51b5; color:#fff; flex-shrink:0;">
-              You
-            </div>
+          <!-- bubble -->
+          <div class="message" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
+            <span ng-bind="m.text"></span>
           </div>
         </div>
 
-        <!-- typing indicator -->
-        <div class="message-row" ng-if="llm.loading" style="display:flex; align-items:flex-end; gap:8px;">
-          <div style="display:flex; align-items:flex-end; gap:8px;">
-            <div class="avatar" style="min-width:36px; height:36px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:600;
-                 background:#e8ecff; color:#1f2b66; flex-shrink:0;">
-              AI
-            </div>
-            <div class="message ai typing" style="max-width:78%;">AI is typing…</div>
-          </div>
+        <!-- thinking indicator (match same structure so it lines up correctly) -->
+        <div class="message-row ai" ng-if="llm.loading">
+          <div class="avatar ai">AI</div>
+          <div class="message ai typing">AI is thinking...</div>
         </div>
 
       </div>
 
-      <!-- input -->
-      <div class="chat-input" style="display:flex; gap:8px; align-items:center; margin-top:8px;">
-        <md-input-container class="md-block" style="flex:1; margin:0;">
-          <label>Write a message (Enter to send, Shift+Enter for newline)</label>
-          <textarea ng-model="llm.prompt" ng-keydown="handleKeydown($event)" rows="2"></textarea>
+      <!-- input (anchored inside chat-container by CSS) -->
+      <div class="chat-input">
+        <md-input-container class="md-block">
+          <textarea
+            ng-model="llm.prompt"
+            ng-keydown="handleKeydown($event)"
+            rows="2"
+            placeholder="&nbsp;Write a message (Enter to send, Shift+Enter for newline)"></textarea>
         </md-input-container>
 
-        <div style="display:flex; flex-direction:column; gap:6px;">
+        <div class="input-actions">
           <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading" aria-label="Send message">
             {{ llm.loading ? 'Thinking...' : 'Send' }}
-          </md-button>
-
-          <md-button class="md-raised" ng-click="clearLLM()" ng-disabled="llm.loading" aria-label="Clear input">
-            Clear
           </md-button>
         </div>
       </div>

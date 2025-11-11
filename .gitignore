@@ -3,3 +3,5 @@ node_modules/
 .env
 
 #currently uses openrouter api
+
+#runs frontend on port 3000 and backend on port 8080

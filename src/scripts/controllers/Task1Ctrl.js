@@ -21,8 +21,6 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
   } else if (testType === "always") {
     $scope.aiMessage = "You are allowed to use generative AI for this task";
     $scope.allowAI = true;
-    //Open AI tab (example dummy site)
-    //window.open("https://chat.openai.com/?model=gpt-5", "_blank");
   } else {
     $scope.aiMessage = "AI usage status is undefined."; //Should never happen
     $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
@@ -35,9 +33,12 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
     error: ''
   };
 
-  // Array of chat messages
+  // Array of chat messages (can be deleted by clear chat)
   // each message: { who: 'user'|'ai', text: '...' }
   $scope.messages = [];
+
+  //Create variable for overall ai messages (including clear chat commands)
+  var humanAIInteraction = [];
 
   // Backend URL
   var backendUrl = 'http://localhost:8080/api/ask-ai'; 
@@ -63,6 +64,7 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
 
     // push user message immediately
     $scope.messages.push({ who: 'user', text: text });
+    humanAIInteraction.push({ who: 'user', text: text });
 
     // clear input and set loading
     $scope.llm.prompt = '';
@@ -75,11 +77,13 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
       .then(function(res) {
         var reply = (res.data && res.data.reply) ? res.data.reply : '(no reply)';
         $scope.messages.push({ who: 'ai', text: reply });
+        humanAIInteraction.push({ who: 'ai', text: reply });
       })
       .catch(function(err) {
         console.error('LLM call failed:', err);
         var errMsg = (err && err.data && err.data.error) ? err.data.error : 'AI service error';
         $scope.messages.push({ who: 'ai', text: 'Error: ' + errMsg });
+        humanAIInteraction.push({ who: 'ai', text: 'Error: ' + errMsg });
       })
       .finally(function() {
         $scope.llm.loading = false;
@@ -107,6 +111,7 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
     $scope.messages = [];
     $scope.llm.prompt = '';
     $scope.llm.error = '';
+    humanAIInteraction.push({ who: 'system', text: '[Conversation cleared]' });
   };
 
   // focus input convenience
@@ -134,12 +139,20 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
     if ($scope.answers.length < $scope.questions.length || $scope.answers.some(a => !a)) {
         $scope.msg = "Please answer all questions!"
         return;
-    }
+    }else{
 
-    //Save user answers
-    
+    //Save user interaction with LLM for task 1
+    User.setQueriesTask1(humanAIInteraction);
+
+    console.log("Task 1 answers:", $scope.answers);
+    console.log("LLM interactions for Task 1:", User.getQueriesTask1());
+
+    User.setStartTimeTask2(new Date().getTime());
 
     // Continue to task 2
     $location.path("/task2");
+
+    }
+
   };
 });
