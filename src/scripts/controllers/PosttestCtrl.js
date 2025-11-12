@@ -66,7 +66,13 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
         console.log(User.getResponse());
 
         // Save all user data
-        User.save();
+        //User.save();
+
+        User.setPerformanceSelfTask(8); //Should be deleted in final version
+
+        //Prepare data for result screen
+        $scope.selfEvalScore = User.getSelfEvalScore();
+        $scope.performanceSelfTask = User.getPerformanceSelfTask();
 
         // Transition to thank-you screen
         $scope.start = false;

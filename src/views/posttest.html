@@ -117,20 +117,31 @@
             </form> 
         </md-card-content> 
     </md-card> 
+</div>
 
-    <!-- Thank You Page -->
-    <div layout="row" layout-align="center center" ng-show="thankYou" class="bg">
-    <md-card layout="column" layout-align="center center" flex="auto" width="50%">
-        <md-card-title layout="column">
-        <h2>Thank you for participating in the experiment!</h2>
-        </md-card-title>
+<!-- Thank you / result screen -->
 
-        <md-card-content layout="column" layout-align="center center" style="text-align:center;">
-        <p style="font-size: 16px; margin-top: 20px;">
-            Your data has been saved. Please call the experiment supervisor and do not close this page.
-        </p>
+<div layout="column" flex="100" ng-show="thankYou" layout-align="center center">
+    <md-card flex="40">
+        <md-card-content>
+            <h1>Result:</h1>
+            <div layout="row" layout-align="center center" layout-margin>
+              <div layout="column" layout-align="center center">
+                    <label><b>My selfassessment</b></label>
+                    <!-- Colors are adapted for accessability (orange/blue)-->
+                    <canvas-gauge width="350" under-color="#EFEFEF" over-color="#56B4E9"
+                                  value="selfEvalScore" mask="(@)" min="0" max="10" style="color: gray"></canvas-gauge> 
+              </div>  
+              <div layout="column" layout-align="center center">
+                    <label><b>My score </b></label>
+                    <canvas-gauge width="350" under-color="#EFEFEF" over-color="#E69F00"
+                                  value="performanceSelfTask" mask="(@)" min="0" max="10" style="color: gray"></canvas-gauge>
+                </div>
+            </div>
         </md-card-content>
     </md-card>
-    </div>
+    <p>The above graphic illustrates how well you did in the last task in comparison to how well you think you did.</p>
+    <h2>Thank you! Your results were submitted!</h2>
+</div>
 
-</div> 
+ 
