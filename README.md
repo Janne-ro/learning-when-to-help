@@ -6,7 +6,6 @@ This project is currently in development.
 
 ## Installs
 npm install concurrently --save-dev
-npm install @biacsics/ng-canvas-gauges
 
 ## How to run
 Run npm start
