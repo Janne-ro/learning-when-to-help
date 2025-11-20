@@ -138,6 +138,8 @@ $scope.correctAnswers = [
   "42"
 ];
 
+//NOTE: NEED TO HAVE THE STUDENTS ANSWER FIRST QUESTION UNTIL CORRECT, THEN SECOND QUESTION ETC
+
 $scope.messagesQuestionsIncorrect = [];
 
 $scope.answers = [];

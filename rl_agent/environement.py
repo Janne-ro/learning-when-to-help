@@ -7,7 +7,7 @@ import numpy as np
 from bkt import BKTModel
 from bkt import MultiSkillBKT
 
-class CustomEnv(gym.Env):
+class LearningEnv(gym.Env):
     def __init__(self):
 
         #initlize super class
@@ -16,8 +16,8 @@ class CustomEnv(gym.Env):
         # Define the observation space
         # 1) Failed attempts on current task (0-20)
         # 2) Time on the current task in seconds (0-10000)
-        # 3) Whether the last task was correct (0 or 1) 
-        # 4) Current understanding modeled as failed attempts on previous tasks (0-100)
+        # 3) Whether they used GenAI on last metatask
+        # 4) Current understanding modeled as failed attempts on previous metatask (0-100)
         spaces.Box(
             low=np.array([0, 0, 0, 0], dtype=np.float32),
             high=np.array([20, 10000, 1, 20], dtype=np.float32),
@@ -33,13 +33,36 @@ class CustomEnv(gym.Env):
         #Define task skill mapping and difficulties
         self.task_skill_map = [[0], [1], [0,1], [0], [1], [0,1], [0], [1], [0,1]]
         self.difficulties = [0.6, 1, 1, 1, 1, 1, 1, 1, 2]
-        
+
+        #save some things about current state
+        self.current_task = 0
+        self.failed_attempts_on_current_task = 0
+        self.current_time = 0
+
+        #save how many failed attempts were on each metatask
+        self.failed_attempts_on_metattasks = {"Task 1" : 0, "Task 2" : 0, "Task 3" : 0}
+
+        #save if they used GenAI on each metatask
+        self.used_genai_on_metatasks = {"Task 1" : False, "Task 2" : False, "Task 3" : False}
+
+
+    def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
+            y = np.random.beta(2, 4, size=size)  # skewed towards lower values with inital values
+            return min + (max-min) * y 
+    
     #resets the enviroment to an intial state with one inital student
     def reset(self, seed=None, options=None):
         
         #set seed if given
         if seed is not None:
             np.random.seed(seed)
+
+        #reset informations about current standing 
+        self.failed_attempts_on_metattasks = {"Task 1" : 0, "Task 2" : 0, "Task 3" : 0}
+        self.used_genai_on_metatasks = {"Task 1" : 0, "Task 2" : 0, "Task 3" : 0}
+        self.current_task = 0
+        self.failed_attempts_on_current_task = 0
+        self.current_time = self.skewed_scaled_beta(60,240) #initalize to an inital value before the first question will be answered (min=60, max=240)
 
         #generate a random student using beta distributions 
         random_p_init = np.random.beta(1, 7) #basically exponential decay
@@ -49,36 +72,13 @@ class CustomEnv(gym.Env):
 
         #initialize multi-skill BKT
         self.student_model = MultiSkillBKT(n_skills=2, p_init=random_p_init, p_trans=random_p_trans, slip=random_slip, guess=random_guess)
-
-        #Only simulate for one step
-        records = self.student_model.simulate_student(list(self.task_skill_map[0]), task_difficulties=list(self.difficulties[0]), seed=seed, retake_until_correct=False)
-
-        #output results 
-        print(f"task {records[0]['task']}, attempt {records[0]['attempt']}, skills {records[0]['skills']}, difficulty={records[0]['difficulty']}, correct={records[0]['correct']}")
-
-        #check if current task was correct or needs to be repeated (Cant be higher than 9 here in intalization)
-        current_task_correct = records[0]['correct']
-        if current_task_correct:
-            next_task = records[0]['task'] + 1
-        else:
-            next_task = records[0]['task']  #repeat same task if incorrect
-
-        def skewed_scaled_beta(size=1, alpha = 2, beta = 4, min=60, max=240):
-            y = np.random.beta(2, 4, size=size)  # skewed towards lower values with inital values
-            return min + (max-min) * y 
-
-        #Sample state 
-        failed_attempts = records[0]['attempt'] - 1  #number of failed attempts before current
-        time_on_task = skewed_scaled_beta() + failed_attempts * skewed_scaled_beta(min=15, max=80)  #assume each attempt takes between 15 and 80 seconds and intial time is between 60 and 240 seconds (with mean 120)
-        last_task_correct = 0 #not yet answered
-        current_understanding = 0 #failed attempts on previous tasks
             
         # Reset environment state
         observation = np.array([
-            failed_attempts,      
-            time_on_task,         
-            last_task_correct,    
-            current_understanding 
+            self.failed_attempts_on_current_task,     # failed attempts on current task 
+            self.current_time, # current time          
+            0, #used GenAI on last metatask
+            0  #failed attempts on last metatask
         ], dtype=np.float32)
 
         #return student parameters in info
@@ -88,17 +88,108 @@ class CustomEnv(gym.Env):
                 'p_trans': random_p_trans,
                 'slip': random_slip,
                 'guess': random_guess,
-                'next_task': next_task,
             }
         }  #Additional info
         return observation, info
     
     def step(self, action):
+
+        #initalize reward
+        reward = 0.0
+
+        #identify which metatask we are in
+        if 0<=self.current_task<=2:
+            current_metatask = "Task 1"
+            last_metatask = None
+        elif 3<=self.current_task<=5:
+            current_metatask = "Task 2"
+            last_metatask = "Task 1"
+        else:
+            current_metatask = "Task 3"
+            last_metatask = "Task 2"
+
+        start_loop = True
+
+        while can_use_genAI==1 or start_loop:
+
+            #reset start_loop which is only used to at least run the loop once
+            start_loop = False
+
+            #get wheter the student can currently use genai on the metatask
+            can_use_genAI = self.used_genai_on_metatasks[current_metatask]
+
+            #if action = 0 (dont allow GenAI) simulate one step 
+            if action == 0 or can_use_genAI:
+
+                #simulate one step
+                records = self.student_model.simulate_student(list(self.task_skill_map[self.current_task]), task_difficulties=list(self.difficulties[self.current_task]), retake_until_correct=False)
+
+                #if the student answered wrong
+                if records[0]["correct"] == 0:
+
+                    #no need to update current task
+                    #no need to update used GenAI
+
+                    #update failed attempts on current task
+                    self.failed_attempts_on_current_task += 1
+
+                    #update failed attempts on metatask
+                    self.failed_attempts_on_metattasks[current_metatask] += 1
+
+                    #update current time
+                    self.current_time += self.skewed_scaled_beta(10,60) #assume answering again takes between 10 and 60 seconds
+
+                #if the student answered correct
+                else:
+
+                    #update current task
+                    self.current_task += 1
+
+                    #update failed attempts on current task 
+                    self.failed_attempts_on_current_task = 0
+
+                    #update time needed on task
+                    self.self.current_time += self.skewed_scaled_beta(20,80) #assume that answering a new task takes longer
+
+                    #if they went to a new metatask
+                    if self.current_task == 3 or self.current_task == 6 or self.current_task == 9:
+                        
+                        #reset current time
+                        self.current_time = self.skewed_scaled_beta(60,240) #again assume that the students need between 60 and 240 seconds
+
+                        #break out of loop
+                        if self.current_task == 3:
+                            current_metatask = "Task 2"
+                            break
+                        elif self.current_task == 6:
+                            current_metatask = "Task 3"
+                            break
+                        #if the episode is finished ie. current_task would go to 9
+                        else:
+                            terminated = True
+                            break
+
+            #if the agent chooses action 1 (to allow GenAI usage)
+            if action == 1:
+
+                #update used GenAI on metatask
+                self.used_genai_on_metatasks[current_metatask] = 1
+
+            #get wheter the student can currently use genai on the metatask
+            can_use_genAI = self.used_genai_on_metatasks[current_metatask]
+        
+
+        #update observation
+        observation = np.array([
+            self.failed_attempts_on_current_task,     # failed attempts on current task 
+            self.current_time, # current time          
+            self.used_genai_on_metatasks[last_metatask] if last_metatask is not None else 0, #used GenAI on last metatask
+            self.failed_attempts_on_metattasks[last_metatask] if last_metatask is not None else 0  #failed attempts on last metatask
+        ], dtype=np.float32)        
+            
+        
         # Execute action and update environment state
-        observation = self.observation_space.sample()  # Replace with next state
-        reward = 0.0  # Calculate appropriate reward
-        terminated = False  # Is episode done due to termination condition?
-        truncated = False  # Is episode done due to time limit or other constraint?
-        info = {}  # Additional info
+        truncated = False  # Is episode done due to time limit or other constraint? (Not needed for this environment)
+        info = {}  # Additional info (Not needed for this environment)
         
         return observation, reward, terminated, truncated, info
