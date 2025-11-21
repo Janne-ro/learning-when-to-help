@@ -38,6 +38,7 @@ class LearningEnv(gym.Env):
         self.current_task = 0
         self.failed_attempts_on_current_task = 0
         self.current_time = 0
+        self.next_try_at = 0
 
         #save how many failed attempts were on each metatask
         self.failed_attempts_on_metattasks = {"Task 1" : 0, "Task 2" : 0, "Task 3" : 0}
@@ -63,6 +64,7 @@ class LearningEnv(gym.Env):
         self.current_task = 0
         self.failed_attempts_on_current_task = 0
         self.current_time = self.skewed_scaled_beta(60,240) #initalize to an inital value before the first question will be answered (min=60, max=240)
+        self.next_try_at = 0 #holds at what time the next try will occur
 
         #generate a random student using beta distributions 
         random_p_init = np.random.beta(1, 7) #basically exponential decay
@@ -112,6 +114,11 @@ class LearningEnv(gym.Env):
 
         while can_use_genAI==1 or start_loop:
 
+            #check if there even is a try occuring
+            if self.current_time<self.next_try_at:
+                reward = 0.0
+                break
+
             #reset start_loop which is only used to at least run the loop once
             start_loop = False
 
@@ -136,8 +143,8 @@ class LearningEnv(gym.Env):
                     #update failed attempts on metatask
                     self.failed_attempts_on_metattasks[current_metatask] += 1
 
-                    #update current time
-                    self.current_time += self.skewed_scaled_beta(10,60) #assume answering again takes between 10 and 60 seconds
+                    #update when the next try is going to occur
+                    self.next_try_at += self.current_time + self.skewed_scaled_beta(10,60) #assume answering again takes between 10 and 60 seconds
 
                 #if the student answered correct
                 else:
@@ -149,13 +156,14 @@ class LearningEnv(gym.Env):
                     self.failed_attempts_on_current_task = 0
 
                     #update time needed on task
-                    self.self.current_time += self.skewed_scaled_beta(20,80) #assume that answering a new task takes longer
+                    self.next_try_at += self.current_time + self.skewed_scaled_beta(20,80) #assume that answering a new task takes longer
 
                     #if they went to a new metatask
                     if self.current_task == 3 or self.current_task == 6 or self.current_task == 9:
                         
                         #reset current time
-                        self.current_time = self.skewed_scaled_beta(60,240) #again assume that the students need between 60 and 240 seconds
+                        self.current_time = 0
+                        self.next_try_at = self.skewed_scaled_beta(60,240) #again assume that the students need between 60 and 240 seconds
 
                         #break out of loop
                         if self.current_task == 3:
@@ -177,6 +185,9 @@ class LearningEnv(gym.Env):
 
             #get wheter the student can currently use genai on the metatask
             can_use_genAI = self.used_genai_on_metatasks[current_metatask]
+
+            #update the current time
+            self.current_time += 5 #simulates that a step occurs every 5 seconds
         
 
         #update observation
