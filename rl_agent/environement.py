@@ -3,8 +3,8 @@
 import gym
 from gym import spaces
 import numpy as np
-#import bkt module
-from bkt import BKTModel
+#import bkt modules
+#from bkt import BKTModel
 from bkt import MultiSkillBKT
 
 class LearningEnv(gym.Env):
@@ -93,6 +93,11 @@ class LearningEnv(gym.Env):
             }
         }  #Additional info
         return observation, info
+    
+    #function modeling the pedagogically grounded reward function (for details please refer to the paper)
+    #basically feeds in the action and the current state 
+    def calculate_reward(self, action, failed_attempts_on_current_task, current_time, used_genai_last_metatask, failed_attempts_last_metatask):
+        pass
     
     def step(self, action):
 
@@ -199,7 +204,7 @@ class LearningEnv(gym.Env):
         ], dtype=np.float32)        
             
         
-        # Execute action and update environment state
+        # Unneded values that stablebaseline requires
         truncated = False  # Is episode done due to time limit or other constraint? (Not needed for this environment)
         info = {}  # Additional info (Not needed for this environment)
         
