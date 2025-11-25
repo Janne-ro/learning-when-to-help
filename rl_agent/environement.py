@@ -46,6 +46,16 @@ class LearningEnv(gym.Env):
         #save if they used GenAI on each metatask
         self.used_genai_on_metatasks = {"Task 1" : False, "Task 2" : False, "Task 3" : False}
 
+        #initalize hyperparameters for pedagogical reward shaping
+        self.c_succ = 10
+        self.c_time = 0.1
+        self.c_fp = 8
+        self.alpha = 0.01
+        self.beta = 0.4
+        self.delta = 0.5
+        self.T_st = 180 #3min
+        self.c_clt = 3
+
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
             y = np.random.beta(2, 4, size=size)  # skewed towards lower values with inital values
@@ -95,9 +105,48 @@ class LearningEnv(gym.Env):
         return observation, info
     
     #function modeling the pedagogically grounded reward function (for details please refer to the paper)
-    #basically feeds in the action and the current state 
-    def calculate_reward(self, action, failed_attempts_on_current_task, current_time, used_genai_last_metatask, failed_attempts_last_metatask):
-        pass
+    #completed_task holds wheter the student completed a task in between the last 5 sec timestep and now
+    def calculate_reward(self, action, completed_task, failed_attempts_on_current_task, current_time, current_metatask):
+        reward = 0.0
+        #integrate R_success
+        if completed_task:
+            reward += self.c_succ
+        #integrate R_time (at each time step negative reward to encourage fast learning)
+        reward -= self.c_time
+
+        #check that the action should have done an action here
+        if action: #equivalent to action is not None
+                
+            #integrate R_PF (only relevant if agent picked action 1)
+            if action == 1:
+                if failed_attempts_on_current_task == 0:
+                    reward -= self.c_fp
+                elif 1<=failed_attempts_on_current_task<=2:
+                    reward += self.alpha * current_time
+                else:
+                    reward += self.beta * current_time
+            #integrate R_CLT
+            if action == 1 and current_time < self.T_st:
+                reward -= self.delta * (self.T_st - current_time)
+            #integrate R_MT
+            if current_metatask == "Task 2":
+                resent_metatasks = ["Task 1"]
+            elif current_metatask == "Task 3":
+                resent_metatasks = ["Task 1", "Task 2"]
+            else:
+                resent_metatasks = []
+            used_desisions = set()
+            for metatask in resent_metatasks:
+                used_desisions.add(self.used_genai_on_metatasks[metatask])
+            #so if we are not in the first task
+            if used_desisions: #equivalent to checking if empty
+                if not action in used_desisions:
+                    reward += self.c_clt
+
+        return reward
+
+            
+
     
     def step(self, action):
 
@@ -151,6 +200,19 @@ class LearningEnv(gym.Env):
                     #update when the next try is going to occur
                     self.next_try_at += self.current_time + self.skewed_scaled_beta(10,60) #assume answering again takes between 10 and 60 seconds
 
+                    if can_use_genAI:
+                        reward += self.calculate_reward(action=None, 
+                                                       completed_task=False, 
+                                                       failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                       current_time=self.current_time,
+                                                       current_metatask=current_metatask)
+                    else: 
+                        reward += self.calculate_reward(action=0, 
+                                                       completed_task=False, 
+                                                       failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                       current_time=self.current_time,
+                                                       current_metatask=current_metatask)
+
                 #if the student answered correct
                 else:
 
@@ -182,11 +244,23 @@ class LearningEnv(gym.Env):
                             terminated = True
                             break
 
+                    reward += self.calculate_reward(action=0, 
+                                                    completed_task=True, 
+                                                    failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                    current_time=self.current_time,
+                                                    current_metatask=current_metatask)
+
             #if the agent chooses action 1 (to allow GenAI usage)
             if action == 1:
 
                 #update used GenAI on metatask
                 self.used_genai_on_metatasks[current_metatask] = 1
+
+                reward += self.calculate_reward(action=1, 
+                                                completed_task=True, 
+                                                failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                current_time=self.current_time,
+                                                current_metatask=current_metatask)
 
             #get wheter the student can currently use genai on the metatask
             can_use_genAI = self.used_genai_on_metatasks[current_metatask]
