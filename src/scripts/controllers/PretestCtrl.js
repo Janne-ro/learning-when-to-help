@@ -49,7 +49,7 @@ app.controller('PretestCtrl', function($scope, $location, User) {
 
             //Set time for starting first task
             const time = new Date().getTime(); 
-            User.setStartTimeTask1(time); 
+            User.setStartTimeTask1_1(time); 
             console.log('Task 1 start time set:', time);
 
             console.log(User.getResponse());

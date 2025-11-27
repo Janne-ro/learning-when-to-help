@@ -202,6 +202,18 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
     if ($scope.isAnswerCorrect(qIndex)) {
       $scope.answeredCorrect[qIndex] = true;
       $scope.messagesQuestionsIncorrect[qIndex] = '';
+      // record start time for the next question
+      const now = new Date().getTime()
+
+      if (qIndex == 0){
+        User.setStartTimeTask1_2(now);
+        console.log("Beginning task 1_2")
+      }
+      if (qIndex == 1){
+        User.setStartTimeTask1_3(now);
+        console.log("Beginning task 1_3")
+      }
+
       //unlock next question if any
       if ($scope.currentQuestionIndex < $scope.questions.length - 1) {
         $scope.currentQuestionIndex++;
@@ -235,8 +247,9 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
 
     console.log("Task 1 selected answers:", $scope.selectedOptions);
     console.log("LLM interactions for Task 1:", User.getQueriesTask1());
+    console.log("Complete User response:", User.getResponse())
 
-    User.setStartTimeTask2(new Date().getTime());
+    User.setStartTimeTask2_1(new Date().getTime());
 
     //Continue to task 2
     $location.path("/task2");

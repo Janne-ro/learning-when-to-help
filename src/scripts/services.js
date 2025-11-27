@@ -4,12 +4,31 @@ tutorServices.service("User", function($http) {
     var resp = {
         //Time stamps to keep track of when each section started
         startTimePretest: 0,
-        startTimeTask1: 0,
-        startTimeTask2: 0,
-        startTimeTask3: 0,
+        startTimeTask1_1: 0,
+        startTimeTask1_2: 0,
+        startTimeTask1_3: 0,
+        startTimeTask2_1: 0,
+        startTimeTask2_2: 0,
+        startTimeTask2_3: 0,
+        startTimeTask3_1: 0,
+        startTimeTask3_2: 0,
+        startTimeTask3_3: 0,
         startTimeSelfTask: 0,
         startTimePosttest: 0,
         endTimePosttest:0,
+        //times needed --> will be calculated later
+        timeNeededPretest: 0,
+        timeNeededTask1_1: 0,
+        timeNeededTask1_2: 0,
+        timeNeededTask1_3: 0,
+        timeNeededTask2_1: 0,
+        timeNeededTask2_2: 0,
+        timeNeededTask2_3: 0,
+        timeNeededTask3_1: 0,
+        timeNeededTask3_2: 0,
+        timeNeededTask3_3: 0,
+        timeNeededSelfTask: 0,
+        timeNeededPosttest: 0,
         //GenAI log for each task 
         queriesTask1: [],
         queriesTask2: [],
@@ -34,14 +53,32 @@ tutorServices.service("User", function($http) {
     this.setStartTimePretest = function(value) { resp.startTimePretest = value; };
     this.getStartTimePretest = function() { return resp.startTimePretest; };
 
-    this.setStartTimeTask1 = function(value) { resp.startTimeTask1 = value; };
-    this.getStartTimeTask1 = function() { return resp.startTimeTask1; };
+    this.setStartTimeTask1_1 = function(value) { resp.startTimeTask1_1 = value; };
+    this.getStartTimeTask1_1 = function() { return resp.startTimeTask1_1; };
 
-    this.setStartTimeTask2 = function(value) { resp.startTimeTask2 = value; };
-    this.getStartTimeTask2 = function() { return resp.startTimeTask2; };
+    this.setStartTimeTask1_2 = function(value) { resp.startTimeTask1_2 = value; };
+    this.getStartTimeTask1_2 = function() { return resp.startTimeTask1_2; };
 
-    this.setStartTimeTask3 = function(value) { resp.startTimeTask3 = value; };
-    this.getStartTimeTask3 = function() { return resp.startTimeTask3; };
+    this.setStartTimeTask1_3 = function(value) { resp.startTimeTask1_3 = value; };
+    this.getStartTimeTask1_3 = function() { return resp.startTimeTask1_3; };
+
+    this.setStartTimeTask2_1 = function(value) { resp.startTimeTask2_1 = value; };
+    this.getStartTimeTask2_1 = function() { return resp.startTimeTask2_1; };
+
+    this.setStartTimeTask2_2 = function(value) { resp.startTimeTask2_2 = value; };
+    this.getStartTimeTask2_2 = function() { return resp.startTimeTask2_2; };
+
+    this.setStartTimeTask2_3 = function(value) { resp.startTimeTask2_3 = value; };
+    this.getStartTimeTask2_3 = function() { return resp.startTimeTask2_3; };
+
+    this.setStartTimeTask3_1 = function(value) { resp.startTimeTask3_1 = value; };
+    this.getStartTimeTask3_1 = function() { return resp.startTimeTask3_1; };
+
+    this.setStartTimeTask3_2 = function(value) { resp.startTimeTask3_2 = value; };
+    this.getStartTimeTask3_2 = function() { return resp.startTimeTask3_2; };
+
+    this.setStartTimeTask3_3 = function(value) { resp.startTimeTask3_3 = value; };
+    this.getStartTimeTask3_3 = function() { return resp.startTimeTask3_3; };
 
     this.setStartTimeSelfTask = function(value) { resp.startTimeSelfTask = value; };
     this.getStartTimeSelfTask = function() { return resp.startTimeSelfTask; };
@@ -96,8 +133,26 @@ tutorServices.service("User", function($http) {
     //Utility
     this.getResponse = function() { return resp; };
 
+    function minutes(a, b) {
+        return ((b - a) / 60000).toFixed(2);
+    }
+
     //Save the response to csv
     this.save = function() {
+        //calculate the time needed on tasks
+        resp.timeNeededPretest = minutes(resp.startTimeTask1_1 - resp.startTimePretest)
+        resp.timeNeededTask1_1 = minutes(resp.startTimeTask1_2 - resp.startTimeTask1_1)
+        resp.timeNeededTask1_2 = minutes(resp.startTimeTask1_3 - resp.startTimeTask1_2)
+        resp.timeNeededTask1_3 = minutes(resp.startTimeTask2_1 - resp.startTimeTask1_3)
+        resp.timeNeededTask2_1 = minutes(resp.startTimeTask2_2 - resp.startTimeTask2_1)
+        resp.timeNeededTask2_2 = minutes(resp.startTimeTask2_3 - resp.startTimeTask2_2)
+        resp.timeNeededTask2_3 = minutes(resp.startTimeTask3_1 - resp.startTimeTask2_3)
+        resp.timeNeededTask3_1 = minutes(resp.startTimeTask3_2 - resp.startTimeTask3_1)
+        resp.timeNeededTask3_2 = minutes(resp.startTimeTask3_3 - resp.startTimeTask3_2)
+        resp.timeNeededTask3_3 = minutes(resp.startTimeSelfTask - resp.startTimeTask3_3)
+        resp.timeNeededSelfTask = minutes(resp.startTimePosttest - resp.startTimeSelfTask)
+        resp.timeNeededPosttest = minutes(resp.endTimePosttest - resp.startTimePosttest)
+
         $http({
             url: "/save-response",
             dataType: "csv",
