@@ -13,6 +13,41 @@
 }
 
 /* =========================
+   Images in tasks
+   ========================= */
+
+/* clean, predictable quote with floated image */
+.quote-float {
+  margin: 0;     /* remove browser default figure margins */
+  padding: 18px;
+  border-left: 4px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+  overflow: auto;               
+}
+
+/* floated image — top-right, with spacing */
+.quote-float .task1-image {
+  float: right;
+  /* prefer a modest fixed size with a responsive cap */
+  width: 400px;                 
+  max-width: 30%;   /* prevents the image from overwhelming small containers */
+  height: auto;
+  margin: 0 0.85rem 0.5rem 1rem; 
+  border-radius: 6px;
+  display: block;
+}
+
+/* reset paragraph spacing inside the figure to remove the default top margin so text starts at the same height as the image but keep comfortable spacing between paragraphs */
+.quote-float p {
+  margin: 0 0 1em 0;            /* top 0, bottom 1em */
+  line-height: 1.45;
+}
+
+
+
+
+/* =========================
    LLM Interaction (chat) styles
    ========================= */
 
@@ -142,6 +177,7 @@
 
 /* new class for the actions column on the right (send button) */
 .input-actions {
+  align-self: center; /* centers the actions column vertically in the chat-input row */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -256,3 +292,4 @@
     bottom: 24px; /* keep it a bit lower on small screens but not too large */
   }
 }
+
