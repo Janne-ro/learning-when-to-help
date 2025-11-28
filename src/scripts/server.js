@@ -187,54 +187,124 @@ csvApp.post('/save-response', async (req, res) => {
   console.log('[CSV] incoming /save-response — keys:', Object.keys(payload));
 
   const flat = flattenForCsv(payload);
+  let incomingFields = Object.keys(flat);
 
-  // Ensure a stable column order for CSV
-  let fields = Object.keys(flat);
-  let writeHeader = !fs.existsSync(CSV_FILE);
+  const fileExists = fs.existsSync(CSV_FILE);
 
-  try {
-    if (!writeHeader) {
-      const firstLine = fs.readFileSync(CSV_FILE, 'utf8').split('\n')[0] || '';
-      if (firstLine.trim()) {
-        const headerCols = firstLine.split(',').map(h => h.trim());
-        const merged = Array.from(new Set(headerCols.concat(fields)));
-        fields = merged;
+  //I know this is increddibly messy but eyy it works! 
+  function parseCsvLine(line) {
+    const out = [];
+    let cur = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQuotes) {
+        if (ch === '"') {
+          // lookahead for double-quote escape
+          if (i + 1 < line.length && line[i + 1] === '"') {
+            cur += '"';
+            i++; // skip escaped quote
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          cur += ch;
+        }
+      } else {
+        if (ch === '"') {
+          inQuotes = true;
+        } else if (ch === ',') {
+          out.push(cur);
+          cur = '';
+        } else {
+          cur += ch;
+        }
       }
     }
+    out.push(cur);
+    return out;
+  }
 
+  try {
+    let fields;           // final stable column order we'll use for this CSV
+    let needToWriteHeader = !fileExists;
+    let fileContent = '';
+
+    if (fileExists) {
+      fileContent = fs.readFileSync(CSV_FILE, 'utf8');
+      // find first non-empty line (header)
+      const lines = fileContent.split(/\r?\n/);
+      const headerIndex = lines.findIndex(l => l && l.trim() !== '');
+      if (headerIndex === -1) {
+        // file exists but empty -> we'll write header
+        needToWriteHeader = true;
+        fields = incomingFields.slice();
+      } else {
+        const headerLine = lines[headerIndex];
+        const existingHeaderCols = parseCsvLine(headerLine);
+        // merge: keep existing order, then append any new incoming fields not present
+        const merged = existingHeaderCols.slice();
+        incomingFields.forEach(f => {
+          if (!merged.includes(f)) merged.push(f);
+        });
+        fields = merged;
+
+        // if merged header is longer than existing, rewrite the header line
+        if (merged.length !== existingHeaderCols.length) {
+          // create a CSV-safe header line (quote each header and escape internal quotes)
+          const headerCsv = merged.map(h => `"${String(h).replace(/"/g, '""')}"`).join(',');
+          lines[headerIndex] = headerCsv;
+          // write entire file back with updated header, preserving line endings
+          fs.writeFileSync(CSV_FILE, lines.join('\n'), 'utf8');
+          // refresh fileContent (so we can check trailing newline later)
+          fileContent = fs.readFileSync(CSV_FILE, 'utf8');
+        }
+      }
+    } else {
+      fields = incomingFields.slice();
+    }
+
+    // Build normalized row in 'fields' order
     const normalized = {};
     fields.forEach(f => {
       normalized[f] = (flat[f] !== undefined) ? flat[f] : '';
     });
 
-    const parser = new Parser({ fields, header: writeHeader });
-    const csv = parser.parse([normalized]) + '\n';
-    const csvToAppend = (!writeHeader) ? csv.split('\n').slice(1).join('\n') + '\n' : csv;
-    fs.appendFileSync(CSV_FILE, csvToAppend, 'utf8');
+    // Use json2csv to generate only the data row if file exists (header:false).
+    // If the file is new, include header + row (header:true).
+    const parser = new Parser({ fields, header: needToWriteHeader });
+    const csvOut = parser.parse([normalized]) + '\n';
 
+    // If file exists and we rewrote header above, ensure we append seamlessly.
+    // If file doesn't end with newline, add one before append.
+    let toAppend = csvOut;
+    if (fileExists) {
+      if (!fileContent.endsWith('\n') && fileContent.length > 0) {
+        // ensure separation from last line
+        toAppend = '\n' + csvOut;
+      }
+    }
+
+    fs.appendFileSync(CSV_FILE, toAppend, 'utf8');
     console.log('[CSV] saved to', CSV_FILE);
 
-    // --- NEW: attempt to append same data to Google Sheets ---
+    // --- Append to Google Sheets (unchanged) ---
     let sheetsResult = null;
     try {
-      // Use an explicit stable field order for sheets: either from env FIELDS_ORDER or the fields we just computed.
-      // The appendToSheet function will use process.env.FIELDS_ORDER if set, otherwise fields from `flat`.
       process.env.FIELDS_ORDER = process.env.FIELDS_ORDER || fields.join(',');
       const appendRes = await appendToSheet(flat);
       sheetsResult = { success: true, sheet: appendRes };
       console.log('[Sheets] appended to', appendRes);
     } catch (sheetErr) {
       console.error('[Sheets] failed to append:', sheetErr);
-      // don't fail the whole endpoint if sheet write fails - return CSV success + sheet error details
       return res.status(200).json({
         success: true,
         csv: true,
         message: 'Saved to CSV. Google Sheets append failed.',
-        sheetError: (sheetErr && sheetErr.message) ? sheetErr.message : String(sheetErr)
+        sheetError: sheetErr.message || String(sheetErr)
       });
     }
 
-    // Both CSV and Sheets succeeded
     return res.json({ success: true, csv: true, sheets: sheetsResult });
   } catch (err) {
     console.error('[CSV] error:', err);
