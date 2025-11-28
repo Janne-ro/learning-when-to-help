@@ -1,5 +1,5 @@
 <div ng-controller="Task1Ctrl">
-  <md-content layout-padding>
+    <md-content layout-padding>
 
     <!-- AI Usage Message -->
     <md-toolbar class="md-primary md-hue-2 headbar-tasks" layout="row" layout-align="center center">
@@ -9,32 +9,30 @@
     </md-toolbar>
 
 
-    <!-- Task Instructions -->
+    <!-- Task Instructions and text-->
     <h3>Task 1: Fame and Friendship</h3>
-    <p>
-      <strong>Answer the questions based on the provided text:</strong>
-    </p>
+    <p><strong>Answer the questions based on the provided text:</strong></p>
     <figure class="quote-float">
-      <img src="src/assets/social_media_task1.jpg" alt="Illustration" class="task1-image"> <!--image taken from pixabai-->
-      <p>
+        <img src="src/assets/social_media_task1.jpg" alt="Illustration" class="task1-image"> <!--image taken from pixabai-->
+        <p>
         Do you use social media? If you do, you are far from unusual. Recent studies indicate that roughly 95% 
         of young people own or have access to a smartphone, and about 45% of teenagers say they use the internet 
         “almost constantly.” More specifically, more than one third of adolescents report spending at least three 
         hours each day on social platforms. Social media, therefore, is woven into everyday life: It helps people 
         keep up with friends, discover events, and find communities. At the same time, it presents new and complex 
         challenges for how we see ourselves.
-      </p>    
+        </p>    
 
-      <p>
+        <p>
         Let’s start with a practical definition. For the purposes of this workshop, self image means how you see yourself, 
         how you feel about it, and what you believe about who you are and how others perceive you. That mix of perception, 
         emotion and belief is shaped by many inputs such as conversations, advertising, and television. However, social media 
         introduces two features that change the dynamics. First, users can curate their self-presentation: They choose what to 
         show, when to show it, and how it’s framed. Second, feeds and profiles create an appearance of immediate, lived reality. 
         Posts look like “real life” even when they are carefully selected or edited.
-      </p>
+        </p>
 
-      <p>
+        <p>
         These features interact with a psychological tendency familiar to many of us: Social comparison. People compare 
         themselves with others across many dimensions such as appearance, popularity, and success. Research shows that 
         these comparisons often make us feel worse about ourselfs. We tend to assume others are happier, more attractive, or 
@@ -46,132 +44,129 @@
         usually have more context about their lives. Middle-rung contacts sit between those extremes. We know them enough 
         to feel their posts are relevant, but not enough to judge how staged their content might be, so we take their curated 
         moments at face value.
-      </p>
+        </p>
 
-      <p>
+        <p>
         Platform design amplifies these tendencies. Internal research by some social-platform companies has highlighted 
         three levers that shape user experience: (1) interface and features that foreground highly visual content and easy 
         comparison (for example, image-first layouts and “like” counts), (2) algorithms that select which posts appear and 
         thereby shape norms about what is common or desirable, and (3) the emergent culture of users who learn what works on 
         the platform and then replicate it. These three forces interact with one another: The interface nudges behaviour, the 
         algorithm rewards that behaviour, and culture normalizes it.
-      </p>
+        </p>
 
-      <p>
+        <p>
         However, it’s also important to emphasize nuance. Passive scrolling (frequent, mostly observational use) has been 
         linked in studies to worse self-image outcomes than active use (posting and interacting). Yet social media also 
         plays a vital social role: maintaining friendships, exposing users to supportive communities, and offering resources 
         that were not previously accessible. The key takeaway is balance and critical awareness: being conscious of what you 
         consume, how platforms shape what you see, and how comparisons, especially to “middle-rung” acquaintances, can subtly 
         influence how you feel about yourself.
-      </p>
+        </p>
     </figure>
 
 <!-- LLM Interaction Section (shown only if allowAI == true) -->
 <div ng-if="allowAI" class="llm-interaction-section" layout="column" layout-align="start stretch">
 
-  <!-- chat wrapper with background (no duplicate border) -->
-  <div class="chat-wrapper">
+    <!-- chat wrapper with background (no duplicate border) -->
+    <div class="chat-wrapper">
 
-    <!-- header -->
-    <div class="chat-header" layout="row" layout-align="space-between center">
-      <h4>AI Assistant</h4>
-      <!-- clear conversation button -->
-      <div>
-        <md-button class="md-raised md-warn" ng-click="clearConversation()" aria-label="Clear conversation">
-          Clear conversation
-        </md-button>
-      </div>
-    </div>
-
-    <div class="chat-container">
-      <!-- messages -->
-      <div id="llm-messages" class="chat-messages">
-
-        <!-- message rows with avatar + bubble -->
-        <div ng-repeat="m in messages track by $index"
-             class="message-row"
-             ng-class="{'user': m.who === 'user', 'ai': m.who === 'ai'}">
-
-          <!-- avatar (position controlled by .message-row.{ai|user} via flex-direction) -->
-          <div class="avatar" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
-            <span ng-if="m.who === 'ai'">AI</span>
-            <span ng-if="m.who === 'user'">You</span>
-          </div>
-
-          <!-- bubble -->
-          <div class="message" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
-            <span ng-bind="m.text"></span>
-          </div>
+        <!-- header -->
+        <div class="chat-header" layout="row" layout-align="space-between center">
+            <h4>AI Assistant</h4>
+            <!-- clear conversation button -->
+            <div>
+                <md-button class="md-raised md-warn" ng-click="clearConversation()" aria-label="Clear conversation">Clear conversation</md-button>
+            </div>
         </div>
 
-        <!-- thinking indicator (match same structure so it lines up correctly) -->
-        <div class="message-row ai" ng-if="llm.loading">
-          <div class="avatar ai">AI</div>
-          <div class="message ai typing">AI is thinking...</div>
+        <div class="chat-container">
+            <!-- messages -->
+            <div id="llm-messages" class="chat-messages">
+
+                <!-- message rows with avatar + bubble -->
+                <div ng-repeat="m in messages track by $index"
+                    class="message-row"
+                    ng-class="{'user': m.who === 'user', 'ai': m.who === 'ai'}">
+
+                    <!-- avatar (position controlled by .message-row.{ai|user} via flex-direction) -->
+                    <div class="avatar" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
+                        <span ng-if="m.who === 'ai'">AI</span>
+                        <span ng-if="m.who === 'user'">You</span>
+                    </div>
+
+                    <!-- bubble -->
+                    <div class="message" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
+                        <span ng-bind="m.text"></span>
+                    </div>
+                </div>
+
+                <!-- thinking indicator (match same structure so it lines up correctly) -->
+                <div class="message-row ai" ng-if="llm.loading">
+                    <div class="avatar ai">AI</div>
+                    <div class="message ai typing">AI is thinking...</div>
+                </div>
+
+            </div>
+
+            <!-- input (anchored inside chat-container by CSS) -->
+            <div class="chat-input">
+                <md-input-container class="md-block">
+                    <textarea
+                        ng-model="llm.prompt"
+                        ng-keydown="handleKeydown($event)"
+                        rows="2"
+                        placeholder="&nbsp;Write a message (Enter to send, Shift+Enter for newline)">
+                    </textarea>
+                </md-input-container>
+
+                <div class="input-actions">
+                    <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading" aria-label="Send message">
+                        {{ llm.loading ? 'Thinking...' : 'Send' }}
+                    </md-button>
+                </div>
+            </div>
         </div>
-
-      </div>
-
-      <!-- input (anchored inside chat-container by CSS) -->
-      <div class="chat-input">
-        <md-input-container class="md-block">
-          <textarea
-            ng-model="llm.prompt"
-            ng-keydown="handleKeydown($event)"
-            rows="2"
-            placeholder="&nbsp;Write a message (Enter to send, Shift+Enter for newline)"></textarea>
-        </md-input-container>
-
-        <div class="input-actions">
-          <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading" aria-label="Send message">
-            {{ llm.loading ? 'Thinking...' : 'Send' }}
-          </md-button>
-        </div>
-      </div>
-    </div>
-
-  </div> <!-- end chat-wrapper -->
-
+    </div> <!-- end chat-wrapper -->
 </div>
 
 
 <h4>Answer the following questions:</h4>
 
 <div ng-repeat="q in questions track by $index" ng-init="qIdx = $index" style="margin-bottom: 18px;">
-  <p><strong>Q1.{{$index + 1}}: {{q.prompt}}</strong></p>
+    <p><strong>Q1.{{$index + 1}}: {{q.prompt}}</strong></p>
 
-  <!-- if this question is unlocked (index <= currentQuestionIndex) show options -->
-  <div ng-if="qIdx <= currentQuestionIndex">
-    <div ng-repeat="opt in q.options track by $index" ng-init="optIdx = $index" style="margin:4px 0;">
-      <md-checkbox
-        ng-model="selectedOptions[qIdx][optIdx]"
-        ng-disabled="qIdx !== currentQuestionIndex || answeredCorrect[qIdx]">
-        {{opt}}
-      </md-checkbox>
+    <!-- if this question is unlocked (index <= currentQuestionIndex) show options -->
+    <div ng-if="qIdx <= currentQuestionIndex">
+        <div ng-repeat="opt in q.options track by $index" ng-init="optIdx = $index" style="margin:4px 0;">
+            <md-checkbox
+                ng-model="selectedOptions[qIdx][optIdx]"
+                ng-disabled="qIdx !== currentQuestionIndex || answeredCorrect[qIdx]">
+                {{opt}}
+            </md-checkbox>
+        </div>
+
+        <div layout="row" layout-align="start center" style="gap:10px; margin-top:8px;">
+            <md-button class="md-raised md-primary"
+                        ng-click="checkAnswer(qIdx); submitTask()"
+                        ng-disabled="answeredCorrect[qIdx]">
+                Check answer
+            </md-button>
+
+            <span ng-if="messagesQuestionsIncorrect[qIdx]" style="color: #8B0000; font-weight: 500;">
+                {{messagesQuestionsIncorrect[qIdx]}}
+            </span>
+
+            <span ng-if="answeredCorrect[qIdx]" style="color: green; font-weight: 600;">
+                Correct — next question unlocked.
+            </span>
+        </div>
     </div>
 
-    <div layout="row" layout-align="start center" style="gap:10px; margin-top:8px;">
-      <md-button class="md-raised md-primary"
-                 ng-click="checkAnswer(qIdx); submitTask()"
-                 ng-disabled="answeredCorrect[qIdx]">
-        Check answer
-      </md-button>
-
-      <span ng-if="messagesQuestionsIncorrect[qIdx]" style="color: #8B0000; font-weight: 500;">
-        {{messagesQuestionsIncorrect[qIdx]}}
-      </span>
-
-      <span ng-if="answeredCorrect[qIdx]" style="color: green; font-weight: 600;">
-        Correct — next question unlocked.
-      </span>
+    <!-- not yet unlocked -->
+    <div ng-if="qIdx > currentQuestionIndex" style="opacity: 0.6; margin-top:6px;">
+        <em>This question will unlock after you answer the previous one correctly.</em>
     </div>
-  </div>
-
-  <!-- not yet unlocked -->
-  <div ng-if="qIdx > currentQuestionIndex" style="opacity: 0.6; margin-top:6px;">
-    <em>This question will unlock after you answer the previous one correctly.</em>
-  </div>
 </div>
 
 <!-- DEBUG: show model (remove when fixed) -->

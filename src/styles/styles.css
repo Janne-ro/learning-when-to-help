@@ -2,294 +2,277 @@
    Headbar / toolbar styles
    ========================= */
 .headbar-tasks {
-  min-height: 100px; /* increases vertical size */
-  height: 100px;     /* optional, keeps it fixed */
-  text-align: center;
+	min-height: 100px; /* increases vertical size */
+	height: 100px;     /* optional, keeps it fixed */
+	text-align: center;
 }
 
 .headbar-text {
-  font-size: 1.4em;  /* slightly larger text */
-  font-weight: 500;
+	font-size: 1.4em;  /* slightly larger text */
+	font-weight: 500;
 }
 
 /* =========================
-   Images in tasks
-   ========================= */
+	Images in tasks
+	========================= */
 
 /* clean, predictable quote with floated image */
 .quote-float {
-  margin: 0;     /* remove browser default figure margins */
-  padding: 18px;
-  border-left: 4px solid #ddd;
-  background: #fff;
-  border-radius: 6px;
-  overflow: auto;               
+	margin: 0;     /* remove browser default figure margins */
+	padding: 18px;
+	border-left: 4px solid #ddd;
+	background: #fff;
+	border-radius: 6px;
+	overflow: auto;               
 }
 
 /* floated image — top-right, with spacing */
 .quote-float .task1-image {
-  float: right;
-  /* prefer a modest fixed size with a responsive cap */
-  width: 400px;                 
-  max-width: 30%;   /* prevents the image from overwhelming small containers */
-  height: auto;
-  margin: 0 0.85rem 0.5rem 1rem; 
-  border-radius: 6px;
-  display: block;
+	float: right;
+	/* prefer a modest fixed size with a responsive cap */
+	width: 400px;                 
+	max-width: 30%;   /* prevents the image from overwhelming small containers */
+	height: auto;
+	margin: 0 0.85rem 0.5rem 1rem; 
+	border-radius: 6px;
+	display: block;
 }
 
 /* reset paragraph spacing inside the figure to remove the default top margin so text starts at the same height as the image but keep comfortable spacing between paragraphs */
 .quote-float p {
-  margin: 0 0 1em 0;            /* top 0, bottom 1em */
-  line-height: 1.45;
+	margin: 0 0 1em 0;            /* top 0, bottom 1em */
+	line-height: 1.45;
 }
 
 
 
 
 /* =========================
-   LLM Interaction (chat) styles
-   ========================= */
+	LLM Interaction (chat) styles
+	========================= */
 
 /* Container that holds the whole interaction section */
 /* Keep the single visible border here (outer container) */
 .llm-interaction-section {
-  border: 2px solid #5c6bc0;
-  border-radius: 12px;
-  background-color: #f8f9fb;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  padding: 12px;
-  margin: 20px 0;
+	border: 2px solid #5c6bc0;
+	border-radius: 12px;
+	background-color: #f8f9fb;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+	padding: 12px;
+	margin: 20px 0;
 }
 
-/* wrapper inside .llm-interaction-section
-   -> removed the duplicate border to avoid the "double border" effect */
+/* wrapper inside .llm-interaction-section */
 .chat-wrapper {
-  padding: 12px;
-  border-radius: 12px;
-  background-color: #f2f2f2;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+	padding: 12px;
+	border-radius: 12px;
+	background-color: #f2f2f2;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
 /* header */
 .llm-interaction-section .chat-header,
 .chat-wrapper .chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
 }
 .llm-interaction-section .chat-header h4,
 .chat-wrapper .chat-header h4 {
-  margin: 0;
-  color: #3f51b5;
+	margin: 0;
+	color: #3f51b5;
 }
 
 /* messages area */
-/* removed inner border so only the outer .llm-interaction-section border remains visible */
 .chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 450px;              /* increased from 300px -> 450px (~1.5× larger) */
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
-  position: relative;         /* for absolute-positioned input */
-  box-shadow: none;
+	display: flex;
+	flex-direction: column;
+	height: 450px;              /* increased from 300px -> 450px (~1.5× larger) */
+	border-radius: 8px;
+	overflow: hidden;
+	background: white;
+	position: relative;         /* for absolute-positioned input */
+	box-shadow: none;
 }
 
 /* make room at the bottom so the last message never sits behind the input */
 .chat-messages {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding: 12px 12px 220px 12px; /* increased bottom padding so input sits lower and messages remain visible */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-sizing: border-box;
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 12px 12px 220px 12px; 
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	box-sizing: border-box;
 }
 
 /* individual message bubble */
 .message {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
-  white-space: pre-wrap;
-  line-height: 1.4;
-  word-break: break-word;
-  text-align: left;
-  /* keep block behavior so align-self on .message.ai/.user controls left/right placement */
-  display: block;
-  position: relative;
+	max-width: 78%;
+	padding: 10px 14px;
+	border-radius: 14px;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+	white-space: pre-wrap;
+	line-height: 1.4;
+	word-break: break-word;
+	text-align: left;
+	/* keep block behavior so align-self on .message.ai/.user controls left/right placement */
+	display: block;
+	position: relative;
 }
 
 /* AI (left) */
 .message.ai {
-  background: #eef1f4;
-  color: #111;
-  align-self: flex-start;
-  border-top-left-radius: 4px;
+	background: #eef1f4;
+	color: #111;
+	align-self: flex-start;
+	border-top-left-radius: 4px;
 }
 
 /* User (right) */
 .message.user {
-  background: #2f44a8;
-  color: #fff;
-  align-self: flex-end;
-  border-top-right-radius: 4px;
+	background: #2f44a8;
+	color: #fff;
+	align-self: flex-end;
+	border-top-right-radius: 4px;
 }
 
 /* typing indicator bubble */
 .message.typing.ai {
-  font-style: italic;
-  opacity: 0.85;
+	font-style: italic;
+	opacity: 0.85;
 }
 
 /* Protect avatars from being clipped */
 .avatar {
-  min-width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  flex-shrink: 0; /* ensures avatar won't shrink and get clipped */
+	min-width: 36px;
+	height: 36px;
+	border-radius: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	flex-shrink: 0; /* ensures avatar won't shrink and get clipped */
 
-  /* make avatar sit at top of its row (align to top of bubble) */
-  align-self: flex-start;
-  /* small downward offset so avatar aligns visually with bubble padding */
-  margin-top: 6px;
+	/* make avatar sit at top of its row (align to top of bubble) */
+	align-self: flex-start;
+	/* small downward offset so avatar aligns visually with bubble padding */
+	margin-top: 6px;
 }
 
 /* AI avatar */
 .avatar.ai {
-  background: #e8ecff;
-  color: #1f2b66;
+	background: #e8ecff;
+	color: #1f2b66;
 }
 
 /* User avatar */
 .avatar.user {
-  background: #3f51b5;
-  color: #fff;
+	background: #3f51b5;
+	color: #fff;
 }
 
 /* new class for the actions column on the right (send button) */
 .input-actions {
-  align-self: center; /* centers the actions column vertically in the chat-input row */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-  flex-shrink: 0;
+	align-self: center; /* centers the actions column vertically in the chat-input row */
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 6px;
+	flex-shrink: 0;
 }
 
 /* ensure the input area has comfortable internal padding and centers its children */
 .chat-input {
-  border-top: 1px solid rgba(0,0,0,0.06);
-  padding: 14px;                /* increased padding so textarea isn't too close to top border */
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;      /* align to top so textarea can scroll freely */
-  background: #fff;
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 0px;
-  box-sizing: border-box;
-  border-radius: 8px;
-  z-index: 4;
+	border-top: 1px solid rgba(0,0,0,0.06);
+	padding: 14px;                /* increased padding so textarea isn't too close to top border */
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;      /* align to top so textarea can scroll freely */
+	background: #fff;
+	position: absolute;
+	left: 12px;
+	right: 12px;
+	bottom: 0px;
+	box-sizing: border-box;
+	border-radius: 8px;
+	z-index: 4;
 }
 
 .chat-input md-input-container {
-  flex: 1 1 auto;
-  width: 100%;        /* ensure it spans all remaining horizontal space */
-  max-width: 100%;    /* override Angular Material's default max-width */    /* let it take available width */
-  min-width: 0;      /* important: allows the flex child to shrink and not overflow */
-  display: block;
-  box-sizing: border-box;
-  overflow: visible; /* avoid clipping */
+	flex: 1 1 auto;
+	width: 100%;        /* ensure it spans all remaining horizontal space */
+	max-width: 100%;    /* override Angular Material's default max-width */    /* let it take available width */
+	min-width: 0;      /* important: allows the flex child to shrink and not overflow */
+	display: block;
+	box-sizing: border-box;
+	overflow: visible; /* avoid clipping */
 }
 
 /* Ensure textarea itself also respects full width inside md-input-container */
 .chat-input md-input-container textarea {
-  flex: 1 1 auto;
-  width: 100%;
-  max-width: 100%;
+	flex: 1 1 auto;
+	width: 100%;
+	max-width: 100%;
 }
 
 /* textarea: fixed visual height, increased internal padding, and nicer line-height */
 .chat-input textarea {
-  height: 56px;                 /* fixed visual height */
-  max-height: 120px;            /* allow it to grow up to 120px max */
-  line-height: 20px;            /* prevents text crowding at top */
-  padding: 12px 10px;           /* more top/bottom padding to vertically center placeholder & input */
-  box-sizing: border-box;
-  width: 100%;
-  border-radius: 8px;           /* slightly larger radius to match .chat-input */
-  border: 1px solid rgba(0,0,0,0.08);
-  font-size: 14px;
-  resize: vertical;             /* allow vertical resizing so user can expand if needed */
-  overflow-y: auto;
-  vertical-align: top;
+	height: 56px;                 /* fixed visual height */
+	max-height: 120px;            /* allow it to grow up to 120px max */
+	line-height: 20px;            /* prevents text crowding at top */
+	padding: 12px 10px;           /* more top/bottom padding to vertically center placeholder & input */
+	box-sizing: border-box;
+	width: 100%;
+	border-radius: 8px;           /* slightly larger radius to match .chat-input */
+	border: 1px solid rgba(0,0,0,0.08);
+	font-size: 14px;
+	resize: vertical;             /* allow vertical resizing so user can expand if needed */
+	overflow-y: auto;
+	vertical-align: top;
 }
 
 /* placeholder styling (stronger contrast + aligned with text) */
 .chat-input textarea::placeholder {
-  color: rgba(0,0,0,0.45);
-  opacity: 1;                   /* consistent placeholder opacity across browsers */
-  line-height: 20px;
+	color: rgba(0,0,0,0.45);
+	opacity: 1;                   /* consistent placeholder opacity across browsers */
+	line-height: 20px;
 }
 
 /* smaller styling tweaks */
 .llm-interaction-section .controls {
-  display:flex;
-  gap:8px;
-  align-items:center;
+	display:flex;
+	gap:8px;
+	align-items:center;
 }
 
 /* message-row spacing + layout */
 .message-row {
-  margin-bottom: 4px;
-
-  /* --- ADJUSTED: align avatars to top of bubble (not bottom) --- */
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+	margin-bottom: 4px;
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
 }
 
 /* When the message is from the user, reverse the row so avatar and bubble appear on the right */
 .message-row.user {
-  flex-direction: row-reverse;
+	flex-direction: row-reverse;
 }
 
 /* Ensure AI rows keep the normal left-to-right layout */
 .message-row.ai {
-  flex-direction: row;
+	flex-direction: row;
 }
 
 /* small timestamp style if you add timestamps later */
 .msg-time {
-  display:block;
-  font-size: 11px;
-  color: rgba(0,0,0,0.45);
-  margin-top:6px;
-  text-align: right;
+	display:block;
+	font-size: 11px;
+	color: rgba(0,0,0,0.45);
+	margin-top:6px;
+	text-align: right;
 }
 
-/* responsive tweaks: reduce chat height on small screens */
-@media (max-width: 640px) {
-  .chat-container {
-    height: 330px; /* 1.5× of previous small-screen 220px */
-  }
-  .chat-messages {
-    padding-bottom: 260px; /* increased to account for larger input relative size */
-  }
-  .chat-input {
-    left: 8px;
-    right: 8px;
-    bottom: 24px; /* keep it a bit lower on small screens but not too large */
-  }
-}
+
 

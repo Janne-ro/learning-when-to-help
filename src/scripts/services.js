@@ -29,6 +29,16 @@ tutorServices.service("User", function($http) {
         timeNeededTask3_3: 0,
         timeNeededSelfTask: 0,
         timeNeededPosttest: 0,
+        //how often failed on each task
+        timesFailedTask1_1: 0,
+        timesFailedTask1_2: 0,
+        timesFailedTask1_3: 0,
+        timesFailedTask2_1: 0,
+        timesFailedTask2_2: 0,
+        timesFailedTask2_3: 0,
+        timesFailedTask3_1: 0,
+        timesFailedTask3_2: 0,
+        timesFailedTask3_3: 0,
         //GenAI log for each task 
         queriesTask1: [],
         queriesTask2: [],
@@ -88,6 +98,34 @@ tutorServices.service("User", function($http) {
 
     this.setEndTimePosttest = function(value) { resp.endTimePosttest = value; };
     this.getEndTimePosttest = function() { return resp.endTimePosttest; };
+
+    //times failed
+    this.setTimesFailedTask1_1 = function(value) { resp.timesFailedTask1_1 = value; };
+    this.getTimesFailedTask1_1 = function() { return resp.timesFailedTask1_1; };
+
+    this.setTimesFailedTask1_2 = function(value) { resp.timesFailedTask1_2 = value; };
+    this.getTimesFailedTask1_2 = function() { return resp.timesFailedTask1_2; };
+
+    this.setTimesFailedTask1_3 = function(value) { resp.timesFailedTask1_3 = value; };
+    this.getTimesFailedTask1_3 = function() { return resp.timesFailedTask1_3; };
+
+    this.setTimesFailedTask2_1 = function(value) { resp.timesFailedTask2_1 = value; };
+    this.getTimesFailedTask2_1 = function() { return resp.timesFailedTask2_1; };
+
+    this.setTimesFailedTask2_2 = function(value) { resp.timesFailedTask2_2 = value; };
+    this.getTimesFailedTask2_2 = function() { return resp.timesFailedTask2_2; };
+
+    this.setTimesFailedTask2_3 = function(value) { resp.timesFailedTask2_3 = value; };
+    this.getTimesFailedTask2_3 = function() { return resp.timesFailedTask2_3; };
+
+    this.setTimesFailedTask3_1 = function(value) { resp.timesFailedTask3_1 = value; };
+    this.getTimesFailedTask3_1 = function() { return resp.timesFailedTask3_1; };
+
+    this.setTimesFailedTask3_2 = function(value) { resp.timesFailedTask3_2 = value; };
+    this.getTimesFailedTask3_2 = function() { return resp.timesFailedTask3_2; };
+
+    this.setTimesFailedTask3_3 = function(value) { resp.timesFailedTask3_3 = value; };
+    this.getTimesFailedTask3_3 = function() { return resp.timesFailedTask3_3; };
 
     //GenAI logs
     this.setQueriesTask1 = function(value) { resp.queriesTask1 = value; };
