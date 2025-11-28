@@ -7,6 +7,7 @@ This project is currently in development.
 ## Installs
 npm install concurrently --save-dev
 npm install json2csvnp
+npm install googleapis json2csv dotenv axios express cors
 
 ## Concurrently used ports
 * The frontend runs on port 3000

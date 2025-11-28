@@ -3,6 +3,10 @@ require('dotenv').config(); // loads .env (use a separate .env not committed to 
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const { Parser } = require('json2csv');
+const { google } = require('googleapis');
 
 const app = express();
 app.use(cors()); // enable CORS for dev; restrict in production
@@ -11,7 +15,7 @@ app.use(express.json());
 // Prefer environment variable. If you want the placeholder literal, replace below.
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// Simple endpoint to forward prompts to OpenRouter
+// Simple endpoint to forward prompts to OpenRouter (unchanged)
 app.post('/api/ask-ai', async (req, res) => {
   const prompt = req.body.prompt;
   if (!prompt || typeof prompt !== 'string') {
@@ -38,7 +42,6 @@ app.post('/api/ask-ai', async (req, res) => {
       }
     );
 
-    // adapt depending on OpenRouter response shape
     const reply =
       response.data?.choices?.[0]?.message?.content
       || response.data?.choices?.[0]?.text
@@ -55,18 +58,14 @@ app.post('/api/ask-ai', async (req, res) => {
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`AI proxy listening on port ${PORT}`));
 
-// ---------- CSV saving endpoint on port 4000 ----------
-const fs = require('fs');
-const path = require('path');
-const { Parser } = require('json2csv');
-
+// ---------- CSV + Google Sheets saving endpoint on port 4000 ----------
 const csvApp = express();            // separate Express instance
 csvApp.use(cors());                  // allow cross-origin from your frontend; tighten in prod
 csvApp.use(express.json());          // parse JSON bodies
 
 const CSV_FILE = path.resolve(process.cwd(), 'responses.csv');
 
-// Utility: convert any nested objects/arrays to JSON strings so CSV stays flat
+// Utility: convert nested objects/arrays to JSON strings so CSV stays flat
 function flattenForCsv(obj) {
   const out = {};
   Object.keys(obj || {}).forEach(k => {
@@ -86,30 +85,123 @@ function flattenForCsv(obj) {
   return out;
 }
 
-csvApp.post('/save-response', (req, res) => {
+/**
+ * Google Sheets helper
+ * - Reads service account credentials either from:
+ *     - GOOGLE_SERVICE_ACCOUNT_PATH (path to json file), OR
+ *     - GOOGLE_SERVICE_ACCOUNT_JSON (JSON string)
+ * - Uses SPREADSHEET_ID and SHEET_NAME env vars.
+ */
+async function getSheetsClient() {
+  const spreadsheetId = process.env.SPREADSHEET_ID;
+  if (!spreadsheetId) throw new Error('Missing SPREADSHEET_ID env var');
+
+  // load credentials
+  let credentials = null;
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_PATH) {
+    const p = process.env.GOOGLE_SERVICE_ACCOUNT_PATH;
+    credentials = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), p), 'utf8'));
+  } else if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+  } else {
+    throw new Error('No Google service account credentials provided. Set GOOGLE_SERVICE_ACCOUNT_PATH or GOOGLE_SERVICE_ACCOUNT_JSON');
+  }
+
+  const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets']
+  });
+
+  return {
+    sheets: google.sheets({ version: 'v4', auth }),
+    spreadsheetId,
+    sheetName: process.env.SHEET_NAME || 'Sheet1'
+  };
+}
+
+/**
+ * Append a row to Google Sheets.
+ * - `flat` is an object with flat string/value fields (like flattenForCsv output).
+ * - To keep column order consistent, specify FIELDS_ORDER env var (comma-separated) or use keys of `flat`.
+ */
+async function appendToSheet(flat) {
+  const { sheets, spreadsheetId, sheetName } = await getSheetsClient();
+
+  // determine fields/columns order:
+  const envOrder = process.env.FIELDS_ORDER; // optional comma-separated field list
+  let fields;
+  if (envOrder && envOrder.trim()) {
+    fields = envOrder.split(',').map(s => s.trim()).filter(Boolean);
+  } else {
+    // fallback: use keys of `flat` (this may vary per-request if different payloads have different keys)
+    fields = Object.keys(flat);
+  }
+
+  // prepare header and row values (ensures consistent ordering)
+  const headerRow = fields;
+  const rowValues = fields.map(k => (flat[k] !== undefined ? flat[k] : ''));
+
+  // Check if header exists (read first row)
+  const headerRange = `${sheetName}!1:1`;
+  let headerExists = false;
+  try {
+    const getRes = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: headerRange,
+      majorDimension: 'ROWS'
+    });
+
+    if (Array.isArray(getRes.data.values) && getRes.data.values.length > 0) {
+      // a header exists
+      headerExists = true;
+    }
+  } catch (err) {
+    // If the spreadsheet or range read fails, we'll attempt to continue by writing header.
+    console.warn('[Sheets] header check failed, will try to write header anyway:', err.message || err);
+  }
+
+  // If no header, write it (overwrite A1)
+  if (!headerExists) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${sheetName}!A1`,
+      valueInputOption: 'RAW',
+      resource: { values: [headerRow] }
+    });
+  }
+
+  // Append the row after the header
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${sheetName}!A1`,
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+    resource: { values: [rowValues] }
+  });
+
+  return { spreadsheetId, sheetName };
+}
+
+csvApp.post('/save-response', async (req, res) => {
   const payload = req.body || {};
   console.log('[CSV] incoming /save-response — keys:', Object.keys(payload));
 
   const flat = flattenForCsv(payload);
 
-  // Ensure a stable column order: if file exists, reuse its header order; otherwise use keys from this payload.
+  // Ensure a stable column order for CSV
   let fields = Object.keys(flat);
   let writeHeader = !fs.existsSync(CSV_FILE);
 
   try {
-    // If file exists, attempt to reuse header order (safer for future rows)
     if (!writeHeader) {
-      // read first line (header) and reuse order if possible
       const firstLine = fs.readFileSync(CSV_FILE, 'utf8').split('\n')[0] || '';
       if (firstLine.trim()) {
         const headerCols = firstLine.split(',').map(h => h.trim());
-        // merge headerCols and new fields, preserving headerCols order first
         const merged = Array.from(new Set(headerCols.concat(fields)));
         fields = merged;
       }
     }
 
-    // For any missing fields in flat, ensure an empty string is present so Parser has consistent columns
     const normalized = {};
     fields.forEach(f => {
       normalized[f] = (flat[f] !== undefined) ? flat[f] : '';
@@ -117,14 +209,33 @@ csvApp.post('/save-response', (req, res) => {
 
     const parser = new Parser({ fields, header: writeHeader });
     const csv = parser.parse([normalized]) + '\n';
-
-    // If appending to existing file, the parser will add a header — remove it
     const csvToAppend = (!writeHeader) ? csv.split('\n').slice(1).join('\n') + '\n' : csv;
-
     fs.appendFileSync(CSV_FILE, csvToAppend, 'utf8');
 
     console.log('[CSV] saved to', CSV_FILE);
-    return res.json({ success: true, message: 'Saved to CSV' });
+
+    // --- NEW: attempt to append same data to Google Sheets ---
+    let sheetsResult = null;
+    try {
+      // Use an explicit stable field order for sheets: either from env FIELDS_ORDER or the fields we just computed.
+      // The appendToSheet function will use process.env.FIELDS_ORDER if set, otherwise fields from `flat`.
+      process.env.FIELDS_ORDER = process.env.FIELDS_ORDER || fields.join(',');
+      const appendRes = await appendToSheet(flat);
+      sheetsResult = { success: true, sheet: appendRes };
+      console.log('[Sheets] appended to', appendRes);
+    } catch (sheetErr) {
+      console.error('[Sheets] failed to append:', sheetErr);
+      // don't fail the whole endpoint if sheet write fails - return CSV success + sheet error details
+      return res.status(200).json({
+        success: true,
+        csv: true,
+        message: 'Saved to CSV. Google Sheets append failed.',
+        sheetError: (sheetErr && sheetErr.message) ? sheetErr.message : String(sheetErr)
+      });
+    }
+
+    // Both CSV and Sheets succeeded
+    return res.json({ success: true, csv: true, sheets: sheetsResult });
   } catch (err) {
     console.error('[CSV] error:', err);
     return res.status(500).json({ success: false, error: err.message });
