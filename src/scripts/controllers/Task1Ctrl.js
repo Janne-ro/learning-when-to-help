@@ -2,6 +2,11 @@
 //Controller for Task 1
 app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
 
+    //scroll to the top after loading page
+    $timeout(function () {
+        window.scrollTo(0, 0);
+    }, 0);
+
     //Get test type (already implemented elsewhere)
     const testType = User.getTestType();
 
