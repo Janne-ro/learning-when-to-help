@@ -13,6 +13,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "json2csv": "^6.0.0-alpha.2",
     "serve": "^14.2.5"
   },
   "devDependencies": {

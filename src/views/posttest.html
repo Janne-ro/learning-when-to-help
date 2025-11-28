@@ -42,16 +42,6 @@
           </div>
         </div>
 
-        <!-- Free text reflection -->
-        <div layout="column" style="width:100%; margin-top:20px;">
-          <h3>Do you have any further reflections on your work with the system? If you had access to generative AI did you find it helpfull? If not, would you have liked to have access to it?</h3>
-          <md-input-container class="md-block" style="width:90%;">
-            <textarea ng-model="selfAssessmentReflection" 
-                      md-maxlength="500" rows="5" 
-                      placeholder="Write your reflections here..."></textarea>
-          </md-input-container>
-        </div>
-
         <!-- Next Button -->
         <div layout="row" layout-align="left center" style="margin-top:20px; gap:10px;">
           <md-button ng-click="goToPosttest()" class="md-raised md-primary">Next</md-button>
@@ -103,8 +93,30 @@
                     </div>
 
                     <!-- Subtle grey divider between questions -->
-                    <md-divider style="width:80%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
+                    <md-divider 
+                        ng-if="!$last"
+                        style="width:80%; margin:20px auto; background-color:#ccc; height:1px;">
+                    </md-divider>
                 </div>
+
+                <md-divider style="width:100%; margin:40px 0; height:2px; background-color:#888;"></md-divider>
+
+            <h2 style="margin-top: 20px; text-align:center; font-weight:600;">
+                Open Reflection
+            </h2>
+            <p style="text-align:center; margin-bottom:20px;">
+                Please take a moment to reflect in your own words. This is not a rating question.
+            </p>
+
+            <!-- Free text reflection -->
+            <div layout="column" style="width:100%; margin-top:20px;">
+                <h3>{{reflectionMessage}}</h3>
+                <md-input-container class="md-block" style="width:90%;">
+                    <textarea ng-model="selfAssessmentReflection" 
+                            md-maxlength="500" rows="5" 
+                            placeholder="Write your reflections here..."></textarea>
+                </md-input-container>
+            </div>
 
                 <!-- Button and error message on same line -->
                 <div layout="row" layout-align="left center" style="margin-top:20px; gap:10px;">
@@ -114,6 +126,7 @@
                     <span ng-if="msg" style="color: #8B0000; font-weight: 600;">{{msg}}</span> 
                 </div>
             </form> 
+
         </md-card-content> 
     </md-card> 
 </div>

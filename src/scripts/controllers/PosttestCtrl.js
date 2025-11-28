@@ -1,5 +1,17 @@
 app.controller('PosttestCtrl', function($scope, $location, User) { 
 
+    var testType = User.getTestType()
+    //set the reflection message
+    if (testType === "never") {
+        $scope.reflectionMessage = "Do you have any further reflections on your work with the system? Would you have liked to have assitance in the form of generative AI? Would you have used it if was availbale?";
+    } else if (testType === "RL") {
+        $scope.reflectionMessage = "Do you have any further reflections on your work with the system? Do you think it was helpfull for your learning to have the AI assitance only sometimes?";
+    } else if (testType === "always") {
+        $scope.reflectionMessage = "Do you have any further reflections on your work with the system? Do you think using generative AI helped or hindered your learning?";
+    } else {
+        $scope.reflectionMessage = "Do you have any further reflections on your work with the system?"; //Should never happen
+    }
+
     // Track which section is visible
     $scope.selfAssessment = true;  // show self-assessment first
     $scope.start = false;          // post-questionnaire hidden initially
@@ -49,7 +61,7 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
     $scope.finsishSession = function() {
         if ($scope.answers.length < $scope.questions.length || 
             $scope.answers.some(a => a === undefined || a === null)) {
-            $scope.msg = "Please answer all questions!";
+            $scope.msg = "Please answer all rating questions!";
             return;
         }
 
@@ -65,17 +77,17 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
 
         console.log(User.getResponse());
 
-        // Save all user data
-        //User.save();
-
         User.setPerformanceSelfTask(8); //Should be deleted in final version
 
         //Prepare data for result screen
         $scope.selfEvalScore = User.getSelfEvalScore();
         $scope.performanceSelfTask = User.getPerformanceSelfTask();
 
-        // Transition to thank-you screen
+        //transition to thank-you screen
         $scope.start = false;
         $scope.thankYou = true;
+
+        //save all user data
+        User.save();
     };
 });
