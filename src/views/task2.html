@@ -1,0 +1,127 @@
+<div ng-controller="Task2Ctrl">
+    <md-content layout-padding>
+
+    <!-- AI Usage Message -->
+    <md-toolbar class="md-primary md-hue-2 headbar-tasks" layout="row" layout-align="center center">
+        <div>
+            <label class="headbar-text">{{ aiMessage }}</label>
+        </div>
+    </md-toolbar>
+
+
+    <!-- Task Instructions and text-->
+    <h3>Task 2: Features, Algorithm & Culture</h3>
+    <p><strong>Answer the questions based on the provided text:</strong></p>
+    <figure class="quote-float">
+        <!--<img src="src/assets/algorithm_task2.jpg" alt="Illustration" class="task1-image">-->
+        <img src="src/assets/culture_task2.jpg" alt="Illustration" class="task2-image"> <!-- taken from pexels -->
+        <!--<img src="src/assets/general_task2.png" alt="Illustration" class="task2-image"> taken from pixabay -->
+        <p ng-bind-html="task2Content"></p>
+    </figure>
+
+<!-- LLM Interaction Section (shown only if allowAI == true) -->
+<div ng-if="allowAI" class="llm-interaction-section" layout="column" layout-align="start stretch">
+
+    <!-- chat wrapper with background (no duplicate border) -->
+    <div class="chat-wrapper">
+
+        <!-- header -->
+        <div class="chat-header" layout="row" layout-align="space-between center">
+            <h4>AI Assistant</h4>
+            <!-- clear conversation button -->
+            <div>
+                <md-button class="md-raised md-warn" ng-click="clearConversation()" aria-label="Clear conversation">Clear conversation</md-button>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <!-- messages -->
+            <div id="llm-messages" class="chat-messages">
+
+                <!-- message rows with avatar + bubble -->
+                <div ng-repeat="m in messages track by $index"
+                    class="message-row"
+                    ng-class="{'user': m.who === 'user', 'ai': m.who === 'ai'}">
+
+                    <div class="avatar" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
+                        <img ng-if="m.who === 'ai'" src="src/assets/ai_cut.png"  alt="AI avatar" />
+                        <img ng-if="m.who === 'user'" src="src/assets/user_cut.png" alt="Your avatar" />
+                    </div>
+
+                    <!-- bubble -->
+                    <div class="message" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}" ng-bind="m.text"></div>
+
+                </div>
+
+                <!-- thinking indicator (match same structure so it lines up correctly) -->
+                <div class="message-row ai" ng-if="llm.loading">
+                    <div class="avatar ai">
+                        <img src="src/assets/ai_cut.png" alt="AI Avatar">
+                    </div>
+                    <div class="message ai typing">AI is thinking...</div>
+                </div>
+
+            </div>
+
+            <!-- input (anchored inside chat-container by CSS) -->
+            <div class="chat-input">
+                <md-input-container class="md-block">
+                    <textarea
+                        ng-model="llm.prompt"
+                        ng-keydown="handleKeydown($event)"
+                        rows="2"
+                        placeholder="&nbsp;Write a message (Enter to send, Shift+Enter for newline)">
+                    </textarea>
+                </md-input-container>
+
+                <div class="input-actions">
+                    <md-button class="md-raised md-primary" ng-click="sendToLLM()" ng-disabled="llm.loading" aria-label="Send message">
+                        {{ llm.loading ? 'Thinking...' : 'Send' }}
+                    </md-button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end chat-wrapper -->
+</div>
+
+
+<h4>Answer the following questions:</h4>
+
+<div ng-repeat="q in questions track by $index" ng-init="qIdx = $index" style="margin-bottom: 18px;">
+    <p><strong>Q2.{{$index + 1}}: {{q.prompt}}</strong></p>
+
+    <!-- if this question is unlocked (index <= currentQuestionIndex) show options -->
+    <div ng-if="qIdx <= currentQuestionIndex">
+        <div ng-repeat="opt in q.options track by $index" ng-init="optIdx = $index" style="margin:4px 0;">
+            <md-checkbox
+                ng-model="selectedOptions[qIdx][optIdx]"
+                ng-disabled="qIdx !== currentQuestionIndex || answeredCorrect[qIdx]">
+                {{opt}}
+            </md-checkbox>
+        </div>
+
+        <div layout="row" layout-align="start center" style="gap:10px; margin-top:8px;">
+            <md-button class="md-raised md-primary"
+                        ng-click="checkAnswer(qIdx); submitTask()"
+                        ng-disabled="answeredCorrect[qIdx]">
+                Check answer
+            </md-button>
+
+            <span ng-if="messagesQuestionsIncorrect[qIdx]" style="color: #8B0000; font-weight: 500;">
+                {{messagesQuestionsIncorrect[qIdx]}}
+            </span>
+
+            <span ng-if="answeredCorrect[qIdx]" style="color: green; font-weight: 600;">
+                Correct — next question unlocked.
+            </span>
+        </div>
+    </div>
+
+    <!-- not yet unlocked -->
+    <div ng-if="qIdx > currentQuestionIndex" style="opacity: 0.6; margin-top:6px;">
+        <em>This question will unlock after you answer the previous one correctly.</em>
+    </div>
+</div>
+
+<!-- DEBUG: show model (remove when fixed) -->
+<!-- <pre>selectedOptions = {{ selectedOptions | json }}</pre> -->

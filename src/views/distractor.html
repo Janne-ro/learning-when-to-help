@@ -1,0 +1,64 @@
+<div ng-controller="DistractorCtrl">
+    <md-content layout-padding>
+
+        <!-- Top Toolbar (Matching Task 3 Style) -->
+        <md-toolbar class="md-primary md-hue-2 headbar-tasks" layout="row" layout-align="center center">
+            <div>
+                <label class="headbar-text">Experiment Checkpoint</label>
+            </div>
+        </md-toolbar>
+
+        <!-- Task Title and Instructions -->
+        <!-- Added wrapper div with layout alignment to center the text -->
+        <div layout="column" layout-align="center center" style="margin-top: 20px;">
+            <h3 style="margin: 0 0 10px 0;">{{ title }}</h3>
+            
+            <p style="text-align: center; max-width: 1200px;">
+                You have reached a checkpoint in the experiment. Please wait for the experimenter to provide the password before continuing to the next phase.
+            </p>
+        </div>
+
+        <!-- Password Input and Validation Section -->
+        <div layout="column" layout-align="center center" style="margin-top: 40px;">
+            
+            <!-- START: Visual Box Wrapper for Password Gate -->
+            <div layout="column" layout-align="center center" 
+                 class="password-wrapper">
+
+                <!-- Input Container -->
+                <md-input-container class="md-block" style="width: 300px;">
+                    <label>Enter Password</label>
+                    <input type="password" 
+                           ng-model="enteredPassword" 
+                           ng-change="checkPassword()" 
+                           ng-keydown="onKeydown($event)">
+                </md-input-container>
+
+                <!-- Feedback Message Area -->
+                <!-- Using min-height to prevent layout jump when text appears -->
+                <div style="min-height: 30px; margin-bottom: 20px; text-align: center;">
+                    
+                    <!-- Incorrect Feedback (Red) -->
+                    <span ng-if="feedback && !passwordCorrect" style="color: #8B0000; font-weight: 500;">
+                        {{ feedback }}
+                    </span>
+
+                    <!-- Correct Feedback (Green) -->
+                    <span ng-if="feedback && passwordCorrect" style="color: green; font-weight: 600;">
+                        {{ feedback }}
+                    </span>
+                </div>
+
+                <!-- Action Button -->
+                <md-button class="md-raised md-primary" 
+                           ng-click="tryContinue()" 
+                           ng-disabled="!passwordCorrect">
+                    Continue
+                </md-button>
+                
+            </div>
+
+        </div>
+
+    </md-content>
+</div>

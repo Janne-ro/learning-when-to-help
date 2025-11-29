@@ -23,7 +23,8 @@
 	border-left: 4px solid #ddd;
 	background: #fff;
 	border-radius: 6px;
-	overflow: auto;               
+	overflow: auto;  
+    position: relative;             
 }
 
 /* floated image — top-right, with spacing */
@@ -36,6 +37,16 @@
 	margin: 0 0.85rem 0.5rem 1rem; 
 	border-radius: 6px;
 	display: block;
+}
+
+.quote-float .task2-image {
+    float: left;
+    width: 30%;
+    max-width: 260px;
+    margin: 0 0.85rem 0.5rem 1rem; 
+    /* push the image down so text initially sits above it */
+    border-radius: 6px;
+    display: block;
 }
 
 /* reset paragraph spacing inside the figure to remove the default top margin so text starts at the same height as the image but keep comfortable spacing between paragraphs */
@@ -304,5 +315,14 @@
 	text-align: right;
 }
 
+/* For the distractor task */
+
+.password-wrapper {
+    padding: 20px 20px; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+    background-color: #f9f9f9;
+}
 
 
