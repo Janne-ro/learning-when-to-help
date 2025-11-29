@@ -1,6 +1,6 @@
 
 //Controller for Task 1
-app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
+app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $timeout) {
 
     //scroll to the top after loading page
     $timeout(function () {
@@ -28,11 +28,67 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
         $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
     }
 
+    //set the text
+    $scope.task1Text= `<p>
+        Do you use social media? If you do, you are far from unusual. Recent studies indicate that roughly 95% 
+        of young people own or have access to a smartphone, and about 45% of teenagers say they use the internet 
+        “almost constantly.” More specifically, more than one third of adolescents report spending at least three 
+        hours each day on social platforms. Social media, therefore, is woven into everyday life: It helps people 
+        keep up with friends, discover events, and find communities. At the same time, it presents new and complex 
+        challenges for how we see ourselves.
+        </p>    
+
+        <p>
+        Let’s start with a practical definition. For the purposes of this workshop, self image means how you see yourself, 
+        how you feel about it, and what you believe about who you are and how others perceive you. That mix of perception, 
+        emotion and belief is shaped by many inputs such as conversations, advertising, and television. However, social media 
+        introduces two features that change the dynamics. First, users can curate their self-presentation: They choose what to 
+        show, when to show it, and how it’s framed. Second, feeds and profiles create an appearance of immediate, lived reality. 
+        Posts look like “real life” even when they are carefully selected or edited.
+        </p>
+
+        <p>
+        These features interact with a psychological tendency familiar to many of us: Social comparison. People compare 
+        themselves with others across many dimensions such as appearance, popularity, and success. Research shows that 
+        these comparisons often make us feel worse about ourselfs. We tend to assume others are happier, more attractive, or 
+        more successful than they are. This tendency is sometimes called the comparison trap. Importantly, comparison on social 
+        media does not affect everyone in the same way. Boys and girls report similar rates of comparison, but they may focus 
+        on different attributes (for example, muscularity versus thinness). And while comparison can stem from looking at 
+        celebrities or influencers, the strongest effects often come from people in the middle: Acquaintances, classmates, 
+        or “friends of friends.” Why? With celebrities we know images are produced and edited, while with close friends we 
+        usually have more context about their lives. Middle-rung contacts sit between those extremes. We know them enough 
+        to feel their posts are relevant, but not enough to judge how staged their content might be, so we take their curated 
+        moments at face value.
+        </p>
+
+        <p>
+        Platform design amplifies these tendencies. Internal research by some social-platform companies has highlighted 
+        three levers that shape user experience: (1) interface and features that foreground highly visual content and easy 
+        comparison (for example, image-first layouts and “like” counts), (2) algorithms that select which posts appear and 
+        thereby shape norms about what is common or desirable, and (3) the emergent culture of users who learn what works on 
+        the platform and then replicate it. These three forces interact with one another: The interface nudges behaviour, the 
+        algorithm rewards that behaviour, and culture normalizes it.
+        </p>
+
+        <p>
+        However, it’s also important to emphasize nuance. Passive scrolling (frequent, mostly observational use) has been 
+        linked in studies to worse self-image outcomes than active use (posting and interacting). Yet social media also 
+        plays a vital social role: maintaining friendships, exposing users to supportive communities, and offering resources 
+        that were not previously accessible. The key takeaway is balance and critical awareness: being conscious of what you 
+        consume, how platforms shape what you see, and how comparisons, especially to “middle-rung” acquaintances, can subtly 
+        influence how you feel about yourself.
+        </p>`;
+
+    // for HTML binding
+    $scope.task1Content = $sce.trustAsHtml($scope.task1Text);
+
     // LLM/chat state
     $scope.llm = {
         prompt: '',
         loading: false,
-        error: ''
+        error: '',
+        systemPrompt: "You are an helpfull AI assitance who supports students by giving them the answer to questions regarding this text. Dont talk about other things. Also never include * in your answer: \n" + $scope.task1Text,   // one-time system prompt
+        systemPromptSent: false  // flag to track if already sent
     };
 
     //Array of chat messages (can be deleted by clear chat)
@@ -56,7 +112,6 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
         }, delay || 50);
     }
 
-    //send message from user to LLM
     $scope.sendToLLM = function() {
         var text = ($scope.llm.prompt || '').trim();
         if (!text) {
@@ -64,18 +119,22 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
             return;
         }
 
-        //push user message immediately to the messages 
         $scope.messages.push({ who: 'user', text: text });
         humanAIInteraction.push({ who: 'user', text: text });
 
-        //clear input and set loading
         $scope.llm.prompt = '';
         $scope.llm.loading = true;
         $scope.llm.error = '';
         scrollToBottom(0);
 
-        //call backend
-        $http.post(backendUrl, { prompt: text })
+        // only send systemPrompt once per conversation
+        const payload = { prompt: text };
+        if ($scope.llm.systemPrompt && !$scope.llm.systemPromptSent) {
+            payload.systemPrompt = $scope.llm.systemPrompt;
+            $scope.llm.systemPromptSent = true;  // mark as sent
+        }
+
+        $http.post(backendUrl, payload)
         .then(function(res) {
             var reply = (res.data && res.data.reply) ? res.data.reply : '(no reply)';
             $scope.messages.push({ who: 'ai', text: reply });
@@ -89,7 +148,6 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
         })
         .finally(function() {
             $scope.llm.loading = false;
-            //ensure scroll after AI reply appears
             scrollToBottom(120);
         });
     };
@@ -114,6 +172,7 @@ app.controller('Task1Ctrl', function($scope, User, $location, $http, $timeout) {
         $scope.llm.prompt = '';
         $scope.llm.error = '';
         humanAIInteraction.push({ who: 'system', text: '[Conversation cleared]' });
+        $scope.llm.systemPromptSent = false  // flag to track if already sent
     };
 
     //focus input convenience

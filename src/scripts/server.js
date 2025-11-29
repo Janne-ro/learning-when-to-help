@@ -15,17 +15,24 @@ app.use(express.json());
 // Prefer environment variable. If you want the placeholder literal, replace below.
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// Simple endpoint to forward prompts to OpenRouter (unchanged)
 app.post('/api/ask-ai', async (req, res) => {
   const prompt = req.body.prompt;
+  const systemPrompt = req.body.systemPrompt;
+
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'Missing prompt' });
   }
 
   try {
+    const messages = [];
+    if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim() !== '') {
+        messages.push({ role: "system", content: systemPrompt });
+    }
+    messages.push({ role: "user", content: prompt });
+
     const payload = {
-      model: "minimax/minimax-m2:free",  // change if you want a different model
-      messages: [{ role: "user", content: prompt }],
+      model: "x-ai/grok-4.1-fast:free",
+      messages,
       max_tokens: 512,
       temperature: 0.7
     };

@@ -14,55 +14,7 @@
     <p><strong>Answer the questions based on the provided text:</strong></p>
     <figure class="quote-float">
         <img src="src/assets/social_media_task1.jpg" alt="Illustration" class="task1-image"> <!--image taken from pixabai-->
-        <p>
-        Do you use social media? If you do, you are far from unusual. Recent studies indicate that roughly 95% 
-        of young people own or have access to a smartphone, and about 45% of teenagers say they use the internet 
-        “almost constantly.” More specifically, more than one third of adolescents report spending at least three 
-        hours each day on social platforms. Social media, therefore, is woven into everyday life: It helps people 
-        keep up with friends, discover events, and find communities. At the same time, it presents new and complex 
-        challenges for how we see ourselves.
-        </p>    
-
-        <p>
-        Let’s start with a practical definition. For the purposes of this workshop, self image means how you see yourself, 
-        how you feel about it, and what you believe about who you are and how others perceive you. That mix of perception, 
-        emotion and belief is shaped by many inputs such as conversations, advertising, and television. However, social media 
-        introduces two features that change the dynamics. First, users can curate their self-presentation: They choose what to 
-        show, when to show it, and how it’s framed. Second, feeds and profiles create an appearance of immediate, lived reality. 
-        Posts look like “real life” even when they are carefully selected or edited.
-        </p>
-
-        <p>
-        These features interact with a psychological tendency familiar to many of us: Social comparison. People compare 
-        themselves with others across many dimensions such as appearance, popularity, and success. Research shows that 
-        these comparisons often make us feel worse about ourselfs. We tend to assume others are happier, more attractive, or 
-        more successful than they are. This tendency is sometimes called the comparison trap. Importantly, comparison on social 
-        media does not affect everyone in the same way. Boys and girls report similar rates of comparison, but they may focus 
-        on different attributes (for example, muscularity versus thinness). And while comparison can stem from looking at 
-        celebrities or influencers, the strongest effects often come from people in the middle: Acquaintances, classmates, 
-        or “friends of friends.” Why? With celebrities we know images are produced and edited, while with close friends we 
-        usually have more context about their lives. Middle-rung contacts sit between those extremes. We know them enough 
-        to feel their posts are relevant, but not enough to judge how staged their content might be, so we take their curated 
-        moments at face value.
-        </p>
-
-        <p>
-        Platform design amplifies these tendencies. Internal research by some social-platform companies has highlighted 
-        three levers that shape user experience: (1) interface and features that foreground highly visual content and easy 
-        comparison (for example, image-first layouts and “like” counts), (2) algorithms that select which posts appear and 
-        thereby shape norms about what is common or desirable, and (3) the emergent culture of users who learn what works on 
-        the platform and then replicate it. These three forces interact with one another: The interface nudges behaviour, the 
-        algorithm rewards that behaviour, and culture normalizes it.
-        </p>
-
-        <p>
-        However, it’s also important to emphasize nuance. Passive scrolling (frequent, mostly observational use) has been 
-        linked in studies to worse self-image outcomes than active use (posting and interacting). Yet social media also 
-        plays a vital social role: maintaining friendships, exposing users to supportive communities, and offering resources 
-        that were not previously accessible. The key takeaway is balance and critical awareness: being conscious of what you 
-        consume, how platforms shape what you see, and how comparisons, especially to “middle-rung” acquaintances, can subtly 
-        influence how you feel about yourself.
-        </p>
+        <p ng-bind-html="task1Content"></p>
     </figure>
 
 <!-- LLM Interaction Section (shown only if allowAI == true) -->
@@ -89,21 +41,21 @@
                     class="message-row"
                     ng-class="{'user': m.who === 'user', 'ai': m.who === 'ai'}">
 
-                    <!-- avatar (position controlled by .message-row.{ai|user} via flex-direction) -->
                     <div class="avatar" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
-                        <span ng-if="m.who === 'ai'">AI</span>
-                        <span ng-if="m.who === 'user'">You</span>
+                        <img ng-if="m.who === 'ai'" src="src/assets/ai_cut.png"  alt="AI avatar" />
+                        <img ng-if="m.who === 'user'" src="src/assets/user_cut.png" alt="Your avatar" />
                     </div>
 
                     <!-- bubble -->
-                    <div class="message" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}">
-                        <span ng-bind="m.text"></span>
-                    </div>
+                    <div class="message" ng-class="{'ai': m.who === 'ai', 'user': m.who === 'user'}" ng-bind="m.text"></div>
+
                 </div>
 
                 <!-- thinking indicator (match same structure so it lines up correctly) -->
                 <div class="message-row ai" ng-if="llm.loading">
-                    <div class="avatar ai">AI</div>
+                    <div class="avatar ai">
+                        <img src="src/assets/ai_cut.png" alt="AI Avatar">
+                    </div>
                     <div class="message ai typing">AI is thinking...</div>
                 </div>
 
