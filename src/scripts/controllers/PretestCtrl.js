@@ -27,37 +27,36 @@ app.controller('PretestCtrl', function($scope, $location, User) {
     
 
     $scope.processAnswers = function() {
-         if ($scope.answers.length < $scope.questions.length || $scope.answers.some(a => a === undefined || a === null)) {
-            $scope.msg = "Please answer all questions!"
+        if ($scope.answers.filter(a => a !== undefined && a !== null && a !== "").length !== $scope.questions.length) {
+            $scope.msg = "Please answer all questions!";
             return;
+        }
+
+        var ans = $scope.answers;
+        console.log(ans);
+        
+        //Set test type (1 = never allow, 2 = always allow, 3 = RL agent decides)
+        var random = (Math.floor((Math.random() * 10000)) % 3) + 1;
+
+        if (random == 1){
+            User.setTestType("never");
+        } else if (random == 2){
+            User.setTestType("always");
         } else {
+            User.setTestType("RL");
+        }
+        User.setPre(ans);
 
-            var ans = $scope.answers;
-            console.log(ans);
-            
-            //Set test type (1 = never allow, 2 = always allow, 3 = RL agent decides)
-            var random = (Math.floor((Math.random() * 10000)) % 3) + 1;
+        //Set time for starting first task
+        const time = new Date().getTime(); 
+        User.setStartTimeTask1_1(time); 
+        console.log('Task 1 start time set:', time);
 
-            if (random == 1){
-                User.setTestType("never");
-            } else if (random == 2){
-                User.setTestType("always");
-            } else {
-                User.setTestType("RL");
-            }
-            User.setPre(ans);
+        console.log(User.getResponse());
+        // User.save();
 
-            //Set time for starting first task
-            const time = new Date().getTime(); 
-            User.setStartTimeTask1_1(time); 
-            console.log('Task 1 start time set:', time);
-
-            console.log(User.getResponse());
-            // User.save();
-
-            //Redirect to first task
-            $location.path("/task1");
-        };
+        //Redirect to first task
+        $location.path("/task1");
 
     };
 });

@@ -59,11 +59,10 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
 
     // Finish session
     $scope.finsishSession = function() {
-        if ($scope.answers.length < $scope.questions.length || 
-            $scope.answers.some(a => a === undefined || a === null)) {
-            $scope.msg = "Please answer all rating questions!";
+        if ($scope.answers.filter(a => a !== undefined && a !== null && a !== "").length !== $scope.questions.length) {
+            $scope.msg = "Please answer all questions!";
             return;
-        }
+        } 
 
         var ans = $scope.answers;
         console.log(ans);

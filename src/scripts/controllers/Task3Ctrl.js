@@ -16,10 +16,10 @@ app.controller('Task3Ctrl', function($scope, $sce, User, $location, $http, $time
     //Display different messages based on test type
     if (testType === "never") {
         $scope.aiMessage = "You are not allowed to use generative AI for this task";
-        $scope.allowAI = true; //--> should usually be set to false (for testing always true)
+        $scope.allowAI = false; 
     } else if (testType === "RL") {
         $scope.aiMessage = "You are currently not allowed to use generative AI for this task. In the future this might change";
-        $scope.allowAI = true; //--> should usually be set to false (for testing always true)
+        $scope.allowAI = false;
     } else if (testType === "always") {
         $scope.aiMessage = "You are allowed to use generative AI for this task";
         $scope.allowAI = true;
