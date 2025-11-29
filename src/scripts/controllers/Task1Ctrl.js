@@ -28,7 +28,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
     }
 
-    //set the text
+    //set the text of the task
     $scope.task1Text= `<p>
         Do you use social media? If you do, you are far from unusual. Recent studies indicate that roughly 95% 
         of young people own or have access to a smartphone, and about 45% of teenagers say they use the internet 
@@ -79,26 +79,25 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         influence how you feel about yourself.
         </p>`;
 
-    // for HTML binding
+    //set scope variable for HTML binding and trust it
     $scope.task1Content = $sce.trustAsHtml($scope.task1Text);
 
-    // LLM/chat state
+    //variable that holds LLM/chat state
     $scope.llm = {
         prompt: '',
         loading: false,
         error: '',
-        systemPrompt: "You are an helpfull AI assitance who supports students by giving them the answer to questions regarding this text. Dont talk about other things. Also never include * in your answer: \n" + $scope.task1Text,   // one-time system prompt
-        systemPromptSent: false  // flag to track if already sent
+        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text. Dont talk about other things and firendly lead them back to the text. Also never include * in your answer: \n" + $scope.task1Text,   // one-time system prompt
     };
 
     //Array of chat messages (can be deleted by clear chat)
     //each message has: { who: 'user'|'ai', text: '...' }
     $scope.messages = [];
 
-    //Create variable for overall ai messages (including clear chat commands); different from scope.messages only in that sense
+    //create variable for overall ai messages (including clear chat commands) --> different from scope.messages only in that sense
     var humanAIInteraction = [];
 
-    //Backend URL on which the llm api is hosted
+    //backend URL on which the llm api is hosted
     var backendUrl = 'http://localhost:8080/api/ask-ai'; 
 
     //helper function that scrolls to the bottom
@@ -112,6 +111,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         }, delay || 50);
     }
 
+    //Send the message to the LLM
     $scope.sendToLLM = function() {
         var text = ($scope.llm.prompt || '').trim();
         if (!text) {
@@ -119,6 +119,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
             return;
         }
 
+        // push user message locally (so UI shows it immediately)
         $scope.messages.push({ who: 'user', text: text });
         humanAIInteraction.push({ who: 'user', text: text });
 
@@ -127,12 +128,24 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.llm.error = '';
         scrollToBottom(0);
 
-        // only send systemPrompt once per conversation
-        const payload = { prompt: text };
-        if ($scope.llm.systemPrompt && !$scope.llm.systemPromptSent) {
-            payload.systemPrompt = $scope.llm.systemPrompt;
-            $scope.llm.systemPromptSent = true;  // mark as sent
+        // Build messages array for LLM: map local roles to model roles.
+        // Convert 'ai' -> 'assistant', 'user' -> 'user', 'system' -> 'system'
+        const messagesForLLM = humanAIInteraction.map(m => {
+            let role = (m.who === 'ai') ? 'assistant' : (m.who === 'system') ? 'system' : 'user';
+            return { role: role, content: m.text };
+        });
+
+        // Ensure the system prompt is included at the start (if present).
+        // This prevents accidentally losing instruction when clearing or page load.
+        if ($scope.llm.systemPrompt && $scope.llm.systemPrompt.trim() !== '') {
+            // Option A: include it only if not already present as the first message
+            if (!messagesForLLM.length || messagesForLLM[0].role !== 'system' || messagesForLLM[0].content !== $scope.llm.systemPrompt) {
+                messagesForLLM.unshift({ role: 'system', content: $scope.llm.systemPrompt });
+            }
         }
+
+        // Post to backend: send the full messages array (not just a single prompt)
+        const payload = { messages: messagesForLLM };
 
         $http.post(backendUrl, payload)
         .then(function(res) {
@@ -152,6 +165,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         });
     };
 
+
     //enter to send, Shift+Enter newline
     $scope.handleKeydown = function(event) {
         if (event.keyCode === 13 && !event.shiftKey) {
@@ -166,13 +180,14 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.llm.error = '';
     };
 
-    //clear the whole conversation
+    //Clear the conversation
     $scope.clearConversation = function() {
         $scope.messages = [];
         $scope.llm.prompt = '';
         $scope.llm.error = '';
+        humanAIInteraction = [];            // reset conversation history so context is gone
+        // if you want to indicate it in the UI as well:
         humanAIInteraction.push({ who: 'system', text: '[Conversation cleared]' });
-        $scope.llm.systemPromptSent = false  // flag to track if already sent
     };
 
     //focus input convenience

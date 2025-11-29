@@ -1,5 +1,5 @@
 // server.js
-require('dotenv').config(); // loads .env (use a separate .env not committed to VCS)
+require('dotenv').config(); // loads .env 
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -9,57 +9,71 @@ const { Parser } = require('json2csv');
 const { google } = require('googleapis');
 
 const app = express();
-app.use(cors()); // enable CORS for dev; restrict in production
+app.use(cors()); //enable CORS for dev
 app.use(express.json());
 
-// Prefer environment variable. If you want the placeholder literal, replace below.
+//fetch env openrouter api 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
+//send to LLM
 app.post('/api/ask-ai', async (req, res) => {
-  const prompt = req.body.prompt;
-  const systemPrompt = req.body.systemPrompt;
+    try {
+        // If client sends an explicit messages array, use it. Otherwise build from prompt + systemPrompt.
+        let messages = [];
 
-  if (!prompt || typeof prompt !== 'string') {
-    return res.status(400).json({ error: 'Missing prompt' });
-  }
+        if (Array.isArray(req.body.messages) && req.body.messages.length > 0) {
+            // Basic validation & normalization: ensure each entry has role and content
+            messages = req.body.messages
+                .map(m => ({
+                    role: (m.role || '').toString(),
+                    content: (m.content || m.text || '').toString()
+                }))
+                .filter(m => m.role && m.content); // drop invalid entries
+        } else {
+            // old fallback: single prompt + optional systemPrompt
+            const prompt = req.body.prompt;
+            const systemPrompt = req.body.systemPrompt;
 
-  try {
-    const messages = [];
-    if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim() !== '') {
-        messages.push({ role: "system", content: systemPrompt });
+            if (!prompt || typeof prompt !== 'string') {
+                return res.status(400).json({ error: 'Missing prompt' });
+            }
+            if (systemPrompt && typeof systemPrompt === 'string' && systemPrompt.trim() !== '') {
+                messages.push({ role: "system", content: systemPrompt });
+            }
+            messages.push({ role: "user", content: prompt });
+        }
+
+        // Example: forward messages array to OpenRouter / model
+        const payload = {
+            model: "x-ai/grok-4.1-fast:free",
+            messages,
+            max_tokens: 512,
+            temperature: 0.7
+        };
+
+        const response = await axios.post(
+            'https://openrouter.ai/api/v1/chat/completions',
+            payload,
+            {
+                headers: {
+                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 30000
+            }
+        );
+
+        const reply =
+            response.data?.choices?.[0]?.message?.content
+            || response.data?.choices?.[0]?.text
+            || JSON.stringify(response.data);
+
+        return res.json({ reply });
+    } catch (err) {
+        console.error('OpenRouter error:', err?.response?.data || err.message);
+        const message = err?.response?.data?.error || 'Failed to contact LLM';
+        return res.status(502).json({ error: message });
     }
-    messages.push({ role: "user", content: prompt });
-
-    const payload = {
-      model: "x-ai/grok-4.1-fast:free",
-      messages,
-      max_tokens: 512,
-      temperature: 0.7
-    };
-
-    const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
-      payload,
-      {
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
-      }
-    );
-
-    const reply =
-      response.data?.choices?.[0]?.message?.content
-      || response.data?.choices?.[0]?.text
-      || JSON.stringify(response.data);
-
-    return res.json({ reply });
-  } catch (err) {
-    console.error('OpenRouter error:', err?.response?.data || err.message);
-    const message = err?.response?.data?.error || 'Failed to contact LLM';
-    return res.status(502).json({ error: message });
-  }
 });
 
 const PORT = process.env.PORT || 8080;
