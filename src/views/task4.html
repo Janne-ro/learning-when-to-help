@@ -1,0 +1,51 @@
+<div ng-controller="Task4Ctrl">
+    <md-content layout-padding>
+
+    <!-- AI Usage Message -->
+    <md-toolbar class="md-primary md-hue-2 headbar-tasks" layout="row" layout-align="center center">
+        <div>
+            <label class="headbar-text"> You are not allowed to use generative AI for this task </label>
+        </div>
+    </md-toolbar>
+
+    <h4>Task 4: Answer the following questions:</h4>
+
+    <p>Like in previous tasks for each question 2 or 3 answers are correct. Each question is worth 1 point when answered correct and 0 points when answered false. You do not have access to AI assistance for this task.</p>
+
+    <p>After submitting you will not be able to change your answers.</p>
+
+    <div ng-repeat="q in questions track by $index" ng-init="qIdx = $index" style="margin-bottom: 18px;">
+
+        <md-divider ng-if="$first" style="width:95%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
+
+        <p><strong>Q4.{{$index + 1}}: {{q.prompt}} (1 Point)</strong></p>
+
+        <div>
+            <div ng-repeat="opt in q.options track by $index" ng-init="optIdx = $index" style="margin:4px 0;">
+                <md-checkbox
+                    ng-model="selectedOptions[qIdx][optIdx]">
+                    {{opt}}
+                </md-checkbox>
+            </div>
+        </div>
+
+        <!-- Subtle grey divider between questions -->
+        <md-divider 
+            ng-if="!$last"
+            style="width:95%; margin:20px auto; background-color:#ccc; height:1px;">
+        </md-divider>
+    </div>
+
+    <!-- final submit button -->
+    <div style="margin-top: 18px;">
+        <md-button class="md-raised md-primary" ng-click="submitTask()">
+            Submit all answers
+        </md-button>
+
+        <span ng-if="msg" style="color: #8B0000; margin-left: 12px;">
+            {{msg}}
+        </span>
+    </div>
+
+    </md-content>
+</div>

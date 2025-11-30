@@ -33,7 +33,7 @@
           <div layout="row" layout-align="center center" style="align-items:center; margin-top: 8px;">
             <p style="margin-right: 10px;">Not well at all</p>
             <md-radio-group ng-model="selfAssessmentScore" layout="row" class="md-primary">
-              <md-radio-button ng-repeat="n in [].constructor(10) track by $index" 
+              <md-radio-button ng-repeat="n in [].constructor(9) track by $index" 
                                value="{{$index + 1}}" aria-label="{{$index + 1}}">
                 {{$index + 1}}
               </md-radio-button>
@@ -142,12 +142,12 @@
                     <label><b>My selfassessment</b></label>
                     <!-- Colors are adapted for accessability (orange/blue)-->
                     <canvas-gauge width="350" under-color="#EFEFEF" over-color="#56B4E9"
-                                  value="selfEvalScore" mask="(@)" min="0" max="10" style="color: gray"></canvas-gauge> 
+                                  value="selfEvalScore" mask="(@)" min="0" max="9" style="color: gray"></canvas-gauge> 
               </div>  
               <div layout="column" layout-align="center center">
                     <label><b>My score </b></label>
                     <canvas-gauge width="350" under-color="#EFEFEF" over-color="#E69F00"
-                                  value="performanceSelfTask" mask="(@)" min="0" max="10" style="color: gray"></canvas-gauge>
+                                  value="performanceSelfTask" mask="(@)" min="0" max="9" style="color: gray"></canvas-gauge>
                 </div>
             </div>
         </md-card-content>

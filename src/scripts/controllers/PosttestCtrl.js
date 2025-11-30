@@ -70,13 +70,10 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
         User.setPost(ans);
 
         // Set end time
-        const time = new Date().getTime(); 
-        User.setEndTimePosttest(time); 
-        console.log('Endtime set:', time);
+        User.setEndTimePosttest(new Date().getTime()); 
+        console.log('Finishing posttest at: ' + User.getEndTimePosttest());
 
         console.log(User.getResponse());
-
-        User.setPerformanceSelfTask(8); //Should be deleted in final version
 
         //Prepare data for result screen
         $scope.selfEvalScore = User.getSelfEvalScore();

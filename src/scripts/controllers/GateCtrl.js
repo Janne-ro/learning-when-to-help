@@ -1,5 +1,4 @@
-// controllers.js (or wherever you define controllers)
-app.controller('DistractorCtrl', ['$scope', '$location', function($scope, $location) {
+app.controller('GateCtrl', ['$scope', '$location', function($scope, $location) {
   // model bound to the input (kept minimal; title/instructions are static in the HTML)
   $scope.enteredPassword = '';
 
@@ -8,9 +7,6 @@ app.controller('DistractorCtrl', ['$scope', '$location', function($scope, $locat
   // derived state / feedback
   $scope.passwordCorrect = false;
   $scope.feedback = '';
-
-  // destination route after successful password
-  $scope.redirectPath = '/task2'; // change this to the correct next route if needed
 
   // call on input change (ng-change) to provide immediate feedback
   $scope.checkPassword = function() {
@@ -34,10 +30,10 @@ app.controller('DistractorCtrl', ['$scope', '$location', function($scope, $locat
   // invoked by the Continue button (only enabled when passwordCorrect is true)
   $scope.tryContinue = function() {
     if ($scope.passwordCorrect) {
-      // clear sensitive value for safety
-      $scope.enteredPassword = '';
-      // navigate to next task
-      $location.path($scope.redirectPath);
+        //begin timer for task 4
+        User.setStartTimeSelfTask(new Date().getTime());
+        //navigate to next task
+        $location.path('/task4');
     } else {
       $scope.feedback = 'Enter the correct password before continuing.';
     }

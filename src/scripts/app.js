@@ -20,9 +20,13 @@ app.config(['$routeProvider', '$mdThemingProvider', function($routeProvider, $md
       templateUrl: 'src/views/task3.html',
       controller: 'Task3Ctrl'
     })
-    .when('/distractor', {
-      templateUrl: 'src/views/distractor.html',
-      controller: 'DistractorCtrl'
+    .when('/gate', {
+      templateUrl: 'src/views/gate.html',
+      controller: 'GateCtrl'
+    })
+    .when('/task4', {
+      templateUrl: 'src/views/task4.html',
+      controller: 'Task4Ctrl'
     })
     .when('/posttest', {
       templateUrl: 'src/views/posttest.html',
