@@ -12,15 +12,15 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
         $scope.reflectionMessage = "Do you have any further reflections on your work with the system?"; //Should never happen
     }
 
-    // Track which section is visible
-    $scope.selfAssessment = true;  // show self-assessment first
-    $scope.start = false;          // post-questionnaire hidden initially
+    //track which section is currently visible
+    $scope.selfAssessment = true;  
+    $scope.start = false;          
 
-    // Self-assessment data
+    //self-assessment data
     $scope.selfAssessmentScore = null;
     $scope.selfAssessmentReflection = "";
     
-    // Posttest questions
+    //Posttest questions (identical to pretest)
     $scope.questions = [
         "How does the use of AI make you feel about your future Career prospects?",
         "How beneficial do you believe using AI is for the learning Outcomes when studying?",
@@ -38,7 +38,7 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
     ];
     $scope.answers = [];
 
-    // Go from self-assessment → post-questionnaire
+    //go from self-assessment to post-questionnaire if everything is filled out
     $scope.goToPosttest = function() {
         if ($scope.selfAssessmentScore === null) {
             $scope.msg = "Please rate how well you think you did.";
@@ -46,19 +46,20 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
         }
         $scope.msg = "";
 
-        // Save the reflection data in User or temporary storage
+        //save the reflection data
         User.setSelfEvalScore($scope.selfAssessmentScore);
         User.setSelfEvalReflection($scope.selfAssessmentReflection);
 
-        // Move to post-questionnaire
+        // actually move to post-questionnaire by setting visibility flags
         $scope.selfAssessment = false;
         $scope.start = true;
 
         console.log(User.getResponse())
     };
 
-    // Finish session
+    //finish the session
     $scope.finsishSession = function() {
+        //check that all questions are answered 
         if ($scope.answers.filter(a => a !== undefined && a !== null && a !== "").length !== $scope.questions.length) {
             $scope.msg = "Please answer all questions!";
             return;
@@ -69,13 +70,13 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
 
         User.setPost(ans);
 
-        // Set end time
+        //set end time
         User.setEndTimePosttest(new Date().getTime()); 
         console.log('Finishing posttest at: ' + User.getEndTimePosttest());
 
         console.log(User.getResponse());
 
-        //Prepare data for result screen
+        //prepare data for result screen
         $scope.selfEvalScore = User.getSelfEvalScore();
         $scope.performanceSelfTask = User.getPerformanceSelfTask();
 

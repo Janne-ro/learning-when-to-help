@@ -111,7 +111,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         }, delay || 50);
     }
 
-    //Send the message to the LLM
+    //send the message to the LLM
     $scope.sendToLLM = function() {
         var text = ($scope.llm.prompt || '').trim();
         if (!text) {
@@ -119,7 +119,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
             return;
         }
 
-        // push user message locally (so UI shows it immediately)
+        // push user message locally (so that the UI shows it immediately)
         $scope.messages.push({ who: 'user', text: text });
         humanAIInteraction.push({ who: 'user', text: text });
 
@@ -128,23 +128,22 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.llm.error = '';
         scrollToBottom(0);
 
-        // Build messages array for LLM: map local roles to model roles.
-        // Convert 'ai' -> 'assistant', 'user' -> 'user', 'system' -> 'system'
+        //build messages array for LLM: map local roles to model roles.
+        //convert 'ai' -> 'assistant', 'user' -> 'user', 'system' -> 'system' to not confuse the LLM when pushing to history
         const messagesForLLM = humanAIInteraction.map(m => {
             let role = (m.who === 'ai') ? 'assistant' : (m.who === 'system') ? 'system' : 'user';
             return { role: role, content: m.text };
         });
 
-        // Ensure the system prompt is included at the start (if present).
-        // This prevents accidentally losing instruction when clearing or page load.
+        //ensure the system prompt is included at the start
+        //this prevents accidentally losing instruction when clearing or page load.
         if ($scope.llm.systemPrompt && $scope.llm.systemPrompt.trim() !== '') {
-            // Option A: include it only if not already present as the first message
             if (!messagesForLLM.length || messagesForLLM[0].role !== 'system' || messagesForLLM[0].content !== $scope.llm.systemPrompt) {
                 messagesForLLM.unshift({ role: 'system', content: $scope.llm.systemPrompt });
             }
         }
 
-        // Post to backend: send the full messages array (not just a single prompt)
+        // post to backend: send the full messages array as context
         const payload = { messages: messagesForLLM };
 
         $http.post(backendUrl, payload)

@@ -1,5 +1,6 @@
 app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $timeout) {
 
+    //questions for unassisted task 4
     $scope.questions = [
         {
             prompt: "According to the workshop, why are “middle-rung” social contacts often more likely to trigger harmful comparison than close friends or celebrities?",
@@ -102,36 +103,52 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
         }
     ];
 
-    // initialize selected options
+    //initialize selected options
     $scope.selectedOptions = [];
     $scope.questions.forEach(function(q, i) {
         $scope.selectedOptions[i] = new Array(q.options.length).fill(false);
     });
 
-    // helper for correctness
+    //helper function for checking correctness
     function isAnswerCorrect(qIndex) {
         var selected = [];
+        //check which options were selected
         $scope.selectedOptions[qIndex].forEach(function(val, idx) {
-            if (val) selected.push(idx);
+            if (val){
+                selected.push(idx);
+            } 
         });
+
+        //sort both arrays for easier comparison
         selected.sort();
 
         var correct = $scope.questions[qIndex].correctIndices.slice().sort();
 
-        if (selected.length !== correct.length) return false;
+        //check length first
+        if (selected.length !== correct.length){
+            return false;
+        }
 
+        //check individual entries
         for (var i = 0; i < selected.length; i++) {
-            if (selected[i] !== correct[i]) return false;
+            if (selected[i] !== correct[i]){
+                return false;
+            }   
         }
         return true;
     }
 
-    // submit all answers
+    //submit all answers
     $scope.submitTask = function() {
+
+        //variable to count correct answers
         var correctCount = 0;
 
+        //check each question for correctness
         $scope.questions.forEach(function(q, i) {
-            if (isAnswerCorrect(i)) correctCount++;
+            if (isAnswerCorrect(i)){
+                correctCount++;
+            }
         });
 
         console.log("Task 4 completed.");

@@ -9,7 +9,6 @@
         </md-toolbar>
 
         <!-- Task Title and Instructions -->
-        <!-- Added wrapper div with layout alignment to center the text -->
         <div layout="column" layout-align="center center" style="margin-top: 20px;">
             <h3 style="margin: 0 0 10px 0;">{{ title }}</h3>
             
@@ -21,11 +20,9 @@
         <!-- Password Input and Validation Section -->
         <div layout="column" layout-align="center center" style="margin-top: 40px;">
             
-            <!-- START: Visual Box Wrapper for Password Gate -->
             <div layout="column" layout-align="center center" 
                  class="password-wrapper">
 
-                <!-- Input Container -->
                 <md-input-container class="md-block" style="width: 300px;">
                     <label>Enter Password</label>
                     <input type="password" 
@@ -34,16 +31,12 @@
                            ng-keydown="onKeydown($event)">
                 </md-input-container>
 
-                <!-- Feedback Message Area -->
-                <!-- Using min-height to prevent layout jump when text appears -->
                 <div style="min-height: 30px; margin-bottom: 20px; text-align: center;">
                     
-                    <!-- Incorrect Feedback (Red) -->
                     <span ng-if="feedback && !passwordCorrect" style="color: #8B0000; font-weight: 500;">
                         {{ feedback }}
                     </span>
 
-                    <!-- Correct Feedback (Green) -->
                     <span ng-if="feedback && passwordCorrect" style="color: green; font-weight: 600;">
                         {{ feedback }}
                     </span>

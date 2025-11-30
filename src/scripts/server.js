@@ -1,4 +1,4 @@
-// server.js
+//server.js
 require('dotenv').config(); // loads .env 
 const express = require('express');
 const axios = require('axios');
