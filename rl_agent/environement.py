@@ -151,7 +151,7 @@ class LearningEnv(gym.Env):
             
 
     
-    def step(self, action):
+    def step(self, action, verbose = False):
 
         #initalize reward
         reward = 0.0
@@ -287,20 +287,20 @@ class LearningEnv(gym.Env):
 
             #set wheter the student can currently use genAI on the metatask
             can_use_genAI = self.used_genai_on_metatasks[current_metatask] 
-
-            print("\n" + "="*70)
-            print(f"STEP START — Current Task: {self.current_task} | Action taken: {action}")
-            #needed since student does not answere every time
-            try:
-                print(f"Student answered {'correctly' if records[0]['correct']==1 else 'wrongly'}")
-            except:
-                print("Student did not answer in this iteration")
-            print(f"Metatask: {current_metatask} | Last metatask: {last_metatask}")
-            print(f"Time: {self.current_time} | Next try at: {self.next_try_at}")
-            print(f"Failed attempts on current task: {self.failed_attempts_on_current_task}")
-            print(f"Failed attempts per metatask: {self.failed_attempts_on_metattasks}")
-            print(f"Used GenAI per metatask: {self.used_genai_on_metatasks}")
-            print("="*70)
+            if verbose:
+                print("\n" + "="*70)
+                print(f"STEP START — Current Task: {self.current_task} | Action taken: {action}")
+                #needed since student does not answere every time
+                try:
+                    print(f"Student answered {'correctly' if records[0]['correct']==1 else 'wrongly'}")
+                except:
+                    print("Student did not answer in this iteration")
+                print(f"Metatask: {current_metatask} | Last metatask: {last_metatask}")
+                print(f"Time: {self.current_time} | Next try at: {self.next_try_at}")
+                print(f"Failed attempts on current task: {self.failed_attempts_on_current_task}")
+                print(f"Failed attempts per metatask: {self.failed_attempts_on_metattasks}")
+                print(f"Used GenAI per metatask: {self.used_genai_on_metatasks}")
+                print("="*70)
 
             #for printing purposes
             action = None
@@ -316,9 +316,10 @@ class LearningEnv(gym.Env):
             self.failed_attempts_on_metattasks[last_metatask] if last_metatask is not None else 0  #failed attempts on last metatask
         ], dtype=np.float32)       
 
-        print("\n" + "!"*70)
-        print(f"Reward for this action: {reward}")
-        print("!"*70)
+        if verbose:
+            print("\n" + "!"*70)
+            print(f"Reward for this action: {reward}")
+            print("!"*70)
             
         # Unneded values that stablebaseline requires
         truncated = False  # Is episode done due to time limit or other constraint? (Not needed for this environment)
@@ -330,5 +331,5 @@ class LearningEnv(gym.Env):
 env = LearningEnv()
 env.reset()
 for i in range(10):
-    env.step(0)
-env.step(1)
+    env.step(0, verbose=True)
+env.step(1,verbose=True)
