@@ -1,4 +1,4 @@
-#file including the environment for the rl agent using stable baselines3
+#file including the environment for the rl agent using stable baselines3 gymnasium
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -56,6 +56,9 @@ class LearningEnv(gym.Env):
         self.T_st = 180 #3min
         self.c_clt = 3
 
+        #set max episode length --> should acutally never be used but was integrated for safety
+        self.max_episode_steps = 400
+        self.steps = 0
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
             y = np.random.beta(alpha, beta, size=size)  # skewed towards lower values with inital values
@@ -81,9 +84,12 @@ class LearningEnv(gym.Env):
 
         #generate a random student using beta distributions 
         random_p_init = np.random.beta(1, 7) #basically exponential decay
-        random_p_trans = np.random.beta(1, 7) 
-        random_slip = np.random.beta(2, 10) #skewed bell curve towards low slip
-        random_guess = np.random.beta(2, 6)
+        random_p_trans = max(np.random.beta(1, 7), 0.01) #basically exponential decay but capped at 0.02
+        random_slip = max(np.random.beta(2, 10), 0.01) #skewed bell curve towards low slip
+        random_guess = max(np.random.beta(2, 6), 0.01)
+
+        #reset self.steps
+        self.steps = 0
 
         #initialize multi-skill BKT
         self.student_model = MultiSkillBKT(n_skills=2, p_init=random_p_init, p_trans=random_p_trans, slip=random_slip, guess=random_guess)
@@ -169,8 +175,9 @@ class LearningEnv(gym.Env):
 
         start_loop = True
 
-        #set terminated variable
+        #set terminated and truncated variable
         terminated = False
+        truncated = False  # Is episode done due to time limit or other constraint? (Not needed for this environment)
 
         #set wheter the student can currently use genAI on the metatask
         can_use_genAI = self.used_genai_on_metatasks[current_metatask]
@@ -205,7 +212,7 @@ class LearningEnv(gym.Env):
                     if can_use_genAI:
                         records = self.student_model.simulate_student(task_skill_map=[self.task_skill_map[self.current_task]], task_difficulties=[self.difficulties[self.current_task]*0.5], retake_until_correct=False, current_attempt=self.failed_attempts_on_current_task)
                     else:
-                        records = self.student_model.simulate_student(task_skill_map=[self.task_skill_map[self.current_task]], task_difficulties=[self.difficulties[self.current_task]], retake_until_correct=True, current_attempt=self.failed_attempts_on_current_task)
+                        records = self.student_model.simulate_student(task_skill_map=[self.task_skill_map[self.current_task]], task_difficulties=[self.difficulties[self.current_task]], retake_until_correct=False, current_attempt=self.failed_attempts_on_current_task)
 
                     #if the student answered wrong
                     if records[0]["correct"] == 0:
@@ -307,6 +314,13 @@ class LearningEnv(gym.Env):
 
             #update the current time
             self.current_time += 5 #simulates that a step occurs every 5 seconds
+
+            #update step count
+            self.steps += 1
+            if self.steps >= self.max_episode_steps:
+                truncated = True
+                terminated = True
+                break
         
         #update observation
         observation = np.array([
@@ -322,14 +336,12 @@ class LearningEnv(gym.Env):
             print("!"*70)
             
         # Unneded values that stablebaseline requires
-        truncated = False  # Is episode done due to time limit or other constraint? (Not needed for this environment)
         info = {}  # Additional info (Not needed for this environment)
         
         return observation, reward, terminated, truncated, info
     
-
 env = LearningEnv()
 env.reset()
-for i in range(10):
+for _ in range(100):
     env.step(0, verbose=True)
-env.step(1,verbose=True)
+env.step(1, verbose=True)
