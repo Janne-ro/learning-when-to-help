@@ -288,7 +288,7 @@ class MultiSkillBKT:
     #   - 'skills' : list of skill indices required for that task
     #   - 'correct' : 0/1 whether the student answered correctly on that attempt
     #   - 'difficulty' : difficulty of that task
-    def simulate_student(self, task_skill_map, seed = None, *, task_difficulties = None, retake_until_correct = False, max_retries = None):
+    def simulate_student(self, task_skill_map, seed = None, *, task_difficulties = None, retake_until_correct = False, max_retries = None, current_attempt = None):
         
         #set seed if given
         if seed is not None:
@@ -317,6 +317,9 @@ class MultiSkillBKT:
                     effective_guess = min(max(self.skills[s].guess / task_difficulties[task_idx], 1e-6),1-1e-6)
 
                     #condition slip and guess by attempts 
+                    if current_attempt:
+                        attempt = current_attempt
+
                     SLIP_GUESS_STEP = 0.1
                     effective_slip = min(max(effective_slip * (1 - SLIP_GUESS_STEP * (attempt - 1)), 1e-6), 1-1e-6)
                     effective_guess = min(max(effective_guess * (1 + SLIP_GUESS_STEP * (attempt - 1)), 1e-6), 1-1e-6)
@@ -371,6 +374,7 @@ class MultiSkillBKT:
         return records
 
 
+
 #Example task mapping
 task_skill_map = [[0], [1], [0,1], [0], [1], [0,1], [0], [1], [0,1]]
 difficulties = [0.6, 1, 1, 1, 1, 1, 1, 1, 2]
@@ -382,5 +386,5 @@ ms_bkt = MultiSkillBKT(n_skills=2, p_init=0.1, p_trans=0.1, slip=0.1, guess=0.2)
 records = ms_bkt.simulate_student(task_skill_map, task_difficulties=difficulties, seed=43, retake_until_correct=True)
 
 #output results 
-for r in records:
-    print(f"task {r['task']}, attempt {r['attempt']}, skills {r['skills']}, difficulty={r['difficulty']}, correct={r['correct']}")
+#for r in records:
+    #print(f"task {r['task']}, attempt {r['attempt']}, skills {r['skills']}, difficulty={r['difficulty']}, correct={r['correct']}")

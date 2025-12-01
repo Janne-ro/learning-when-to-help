@@ -1,7 +1,7 @@
 #file including the environment for the rl agent using stable baselines3
 
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 import numpy as np
 #import bkt modules
 #from bkt import BKTModel
@@ -18,7 +18,7 @@ class LearningEnv(gym.Env):
         # 2) Time on the current task in seconds (0-10000)
         # 3) Whether they used GenAI on last metatask
         # 4) Current understanding modeled as failed attempts on previous metatask (0-100)
-        spaces.Box(
+        self.observation_space = spaces.Box(
             low=np.array([0, 0, 0, 0], dtype=np.float32),
             high=np.array([20, 10000, 1, 20], dtype=np.float32),
             dtype=np.float32
@@ -58,23 +58,26 @@ class LearningEnv(gym.Env):
 
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
-            y = np.random.beta(2, 4, size=size)  # skewed towards lower values with inital values
+            y = np.random.beta(alpha, beta, size=size)  # skewed towards lower values with inital values
+            #check that it doesnt return an array when size=1
+            if size == 1:
+                return min + (max-min) * y[0]
             return min + (max-min) * y 
     
     #resets the enviroment to an intial state with one inital student
-    def reset(self, seed=None, options=None):
+    def reset(self, *, seed=None, options=None):
         
         #set seed if given
         if seed is not None:
-            np.random.seed(seed)
+            super().reset(seed=seed)
 
         #reset informations about current standing 
         self.failed_attempts_on_metattasks = {"Task 1" : 0, "Task 2" : 0, "Task 3" : 0}
-        self.used_genai_on_metatasks = {"Task 1" : 0, "Task 2" : 0, "Task 3" : 0}
+        self.used_genai_on_metatasks = {"Task 1" : False, "Task 2" : False, "Task 3" : False}
         self.current_task = 0
         self.failed_attempts_on_current_task = 0
-        self.current_time = self.skewed_scaled_beta(60,240) #initalize to an inital value before the first question will be answered (min=60, max=240)
-        self.next_try_at = 0 #holds at what time the next try will occur
+        self.current_time = 0
+        self.next_try_at = self.skewed_scaled_beta(min=60,max=240) #initalize to an inital value before the first question will be answered (min=60, max=240) #holds at what time the next try will occur
 
         #generate a random student using beta distributions 
         random_p_init = np.random.beta(1, 7) #basically exponential decay
@@ -84,7 +87,7 @@ class LearningEnv(gym.Env):
 
         #initialize multi-skill BKT
         self.student_model = MultiSkillBKT(n_skills=2, p_init=random_p_init, p_trans=random_p_trans, slip=random_slip, guess=random_guess)
-            
+
         # Reset environment state
         observation = np.array([
             self.failed_attempts_on_current_task,     # failed attempts on current task 
@@ -166,15 +169,19 @@ class LearningEnv(gym.Env):
 
         start_loop = True
 
-        while can_use_genAI==1 or start_loop:
+        #set terminated variable
+        terminated = False
 
-            #check if there even is a try occuring
-            if self.current_time<self.next_try_at:
-                reward = 0.0
-                break
+        #set wheter the student can currently use genAI on the metatask
+        can_use_genAI = self.used_genai_on_metatasks[current_metatask]
+
+        while can_use_genAI or start_loop:
 
             #reset start_loop which is only used to at least run the loop once
             start_loop = False
+
+            #initalize records to None
+            records = None
 
             #get wheter the student can currently use genai on the metatask
             can_use_genAI = self.used_genai_on_metatasks[current_metatask]
@@ -182,104 +189,146 @@ class LearningEnv(gym.Env):
             #if action = 0 (dont allow GenAI) simulate one step 
             if action == 0 or can_use_genAI:
 
-                #simulate one step
-                records = self.student_model.simulate_student(list(self.task_skill_map[self.current_task]), task_difficulties=list(self.difficulties[self.current_task]), retake_until_correct=False)
+                #check if there even is a try occuring
+                if self.current_time<self.next_try_at:
+                    reward += self.calculate_reward(
+                        action = None, 
+                        completed_task=False,
+                        failed_attempts_on_current_task=None,
+                        current_time=None,
+                        current_metatask=None)
 
-                #if the student answered wrong
-                if records[0]["correct"] == 0:
-
-                    #no need to update current task
-                    #no need to update used GenAI
-
-                    #update failed attempts on current task
-                    self.failed_attempts_on_current_task += 1
-
-                    #update failed attempts on metatask
-                    self.failed_attempts_on_metattasks[current_metatask] += 1
-
-                    #update when the next try is going to occur
-                    self.next_try_at += self.current_time + self.skewed_scaled_beta(10,60) #assume answering again takes between 10 and 60 seconds
-
-                    if can_use_genAI:
-                        reward += self.calculate_reward(action=None, 
-                                                       completed_task=False, 
-                                                       failed_attempts_on_current_task=self.failed_attempts_on_current_task,
-                                                       current_time=self.current_time,
-                                                       current_metatask=current_metatask)
-                    else: 
-                        reward += self.calculate_reward(action=0, 
-                                                       completed_task=False, 
-                                                       failed_attempts_on_current_task=self.failed_attempts_on_current_task,
-                                                       current_time=self.current_time,
-                                                       current_metatask=current_metatask)
-
-                #if the student answered correct
+                #if there is a try occuring
                 else:
 
-                    #update current task
-                    self.current_task += 1
+                    #simulate one step --> if student can use genAI task difficulty is reduced
+                    if can_use_genAI:
+                        records = self.student_model.simulate_student(task_skill_map=[self.task_skill_map[self.current_task]], task_difficulties=[self.difficulties[self.current_task]*0.5], retake_until_correct=False, current_attempt=self.failed_attempts_on_current_task)
+                    else:
+                        records = self.student_model.simulate_student(task_skill_map=[self.task_skill_map[self.current_task]], task_difficulties=[self.difficulties[self.current_task]], retake_until_correct=True, current_attempt=self.failed_attempts_on_current_task)
 
-                    #update failed attempts on current task 
-                    self.failed_attempts_on_current_task = 0
+                    #if the student answered wrong
+                    if records[0]["correct"] == 0:
 
-                    #update time needed on task
-                    self.next_try_at += self.current_time + self.skewed_scaled_beta(20,80) #assume that answering a new task takes longer
+                        #no need to update current task
+                        #no need to update used GenAI
 
-                    #if they went to a new metatask
-                    if self.current_task == 3 or self.current_task == 6 or self.current_task == 9:
-                        
-                        #reset current time
-                        self.current_time = 0
-                        self.next_try_at = self.skewed_scaled_beta(60,240) #again assume that the students need between 60 and 240 seconds
+                        #update failed attempts on current task
+                        self.failed_attempts_on_current_task += 1
 
-                        #break out of loop
-                        if self.current_task == 3:
-                            current_metatask = "Task 2"
-                            break
-                        elif self.current_task == 6:
-                            current_metatask = "Task 3"
-                            break
-                        #if the episode is finished ie. current_task would go to 9
-                        else:
-                            terminated = True
-                            break
+                        #update failed attempts on metatask
+                        self.failed_attempts_on_metattasks[current_metatask] += 1
 
-                    reward += self.calculate_reward(action=0, 
-                                                    completed_task=True, 
-                                                    failed_attempts_on_current_task=self.failed_attempts_on_current_task,
-                                                    current_time=self.current_time,
-                                                    current_metatask=current_metatask)
+                        #update when the next try is going to occur [TO-DO might have to be adjusted for differing time when allowed to use genAI]
+                        self.next_try_at = self.current_time + self.skewed_scaled_beta(min=10,max=60) #assume answering again takes between 10 and 60 seconds
+
+                        if can_use_genAI:
+                            reward += self.calculate_reward(action=None, 
+                                                        completed_task=False, 
+                                                        failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                        current_time=self.current_time,
+                                                        current_metatask=current_metatask)
+                        else: 
+                            reward += self.calculate_reward(action=0, 
+                                                        completed_task=False, 
+                                                        failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                        current_time=self.current_time,
+                                                        current_metatask=current_metatask)
+
+                    #if the student answered correct
+                    else:
+
+                        #update current task
+                        self.current_task += 1
+
+                        #update failed attempts on current task 
+                        self.failed_attempts_on_current_task = 0
+
+                        #update time needed on task [TO-DO might have to be adjusted for differing time when allowed to use genAI]
+                        self.next_try_at = self.current_time + self.skewed_scaled_beta(min=20,max=80) #assume that answering a new task takes longer
+
+                        #if they went to a new metatask
+                        if self.current_task == 3 or self.current_task == 6 or self.current_task == 9:
+                            
+                            #reset current time
+                            self.current_time = 0
+                            self.next_try_at = self.skewed_scaled_beta(min=60,max=240) #again assume that the students need between 60 and 240 seconds
+
+                            #break out of loop
+                            if self.current_task == 3:
+                                current_metatask = "Task 2"
+                                break
+                            elif self.current_task == 6:
+                                current_metatask = "Task 3"
+                                break
+                            #if the episode is finished ie. current_task would go to 9
+                            else:
+                                terminated = True
+                                break
+
+                        reward += self.calculate_reward(action=0, 
+                                                        completed_task=True, 
+                                                        failed_attempts_on_current_task=self.failed_attempts_on_current_task,
+                                                        current_time=self.current_time,
+                                                        current_metatask=current_metatask)
 
             #if the agent chooses action 1 (to allow GenAI usage)
-            if action == 1:
+            elif action == 1:
 
                 #update used GenAI on metatask
-                self.used_genai_on_metatasks[current_metatask] = 1
+                self.used_genai_on_metatasks[current_metatask] = True
 
                 reward += self.calculate_reward(action=1, 
-                                                completed_task=True, 
+                                                completed_task=False, 
                                                 failed_attempts_on_current_task=self.failed_attempts_on_current_task,
                                                 current_time=self.current_time,
                                                 current_metatask=current_metatask)
+                
 
-            #get wheter the student can currently use genai on the metatask
-            can_use_genAI = self.used_genai_on_metatasks[current_metatask]
+            #set wheter the student can currently use genAI on the metatask
+            can_use_genAI = self.used_genai_on_metatasks[current_metatask] 
+
+            print("\n" + "="*70)
+            print(f"STEP START — Current Task: {self.current_task} | Action taken: {action}")
+            #needed since student does not answere every time
+            try:
+                print(f"Student answered {'correctly' if records[0]['correct']==1 else 'wrongly'}")
+            except:
+                print("Student did not answer in this iteration")
+            print(f"Metatask: {current_metatask} | Last metatask: {last_metatask}")
+            print(f"Time: {self.current_time} | Next try at: {self.next_try_at}")
+            print(f"Failed attempts on current task: {self.failed_attempts_on_current_task}")
+            print(f"Failed attempts per metatask: {self.failed_attempts_on_metattasks}")
+            print(f"Used GenAI per metatask: {self.used_genai_on_metatasks}")
+            print("="*70)
+
+            #for printing purposes
+            action = None
 
             #update the current time
             self.current_time += 5 #simulates that a step occurs every 5 seconds
         
-
         #update observation
         observation = np.array([
             self.failed_attempts_on_current_task,     # failed attempts on current task 
             self.current_time, # current time          
             self.used_genai_on_metatasks[last_metatask] if last_metatask is not None else 0, #used GenAI on last metatask
             self.failed_attempts_on_metattasks[last_metatask] if last_metatask is not None else 0  #failed attempts on last metatask
-        ], dtype=np.float32)        
+        ], dtype=np.float32)       
+
+        print("\n" + "!"*70)
+        print(f"Reward for this action: {reward}")
+        print("!"*70)
             
-        
         # Unneded values that stablebaseline requires
         truncated = False  # Is episode done due to time limit or other constraint? (Not needed for this environment)
         info = {}  # Additional info (Not needed for this environment)
         
         return observation, reward, terminated, truncated, info
+    
+
+env = LearningEnv()
+env.reset()
+for i in range(10):
+    env.step(0)
+env.step(1)
