@@ -54,7 +54,7 @@ class LearningEnv(gym.Env):
         self.beta = 0.4
         self.delta = 0.5
         self.T_st = 180 #3min
-        self.c_clt = 3
+        self.c_clt = 30
 
         #set max episode length --> should acutally never be used but was integrated for safety
         self.max_episode_steps = 400

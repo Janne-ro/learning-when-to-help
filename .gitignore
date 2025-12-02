@@ -3,5 +3,7 @@ node_modules/
 .env
 service-account.json
 responses.csv
+rl_agent/ppo_logs/
+rl_agent/__pycache__/
 
 #currently uses openrouter api
