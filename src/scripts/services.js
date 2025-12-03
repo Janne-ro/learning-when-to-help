@@ -171,59 +171,24 @@ tutorServices.service("User", function($http) {
     //Utility
     this.getResponse = function() { return resp; };
 
-    function minutes(a, b) {
-        return ((b - a) / 60000).toFixed(2);
+    function seconds(a, b) {
+        return ((b - a) / 1000).toFixed(1); //return seconds with one decimal
     }
-
-    //Save the response to csv
-    /*this.save = function() {
-        //calculate the time needed on tasks
-        resp.timeNeededPretest = minutes(resp.startTimeTask1_1, resp.startTimePretest)
-        resp.timeNeededTask1_1 = minutes(resp.startTimeTask1_2, resp.startTimeTask1_1)
-        resp.timeNeededTask1_2 = minutes(resp.startTimeTask1_3, resp.startTimeTask1_2)
-        resp.timeNeededTask1_3 = minutes(resp.startTimeTask2_1, resp.startTimeTask1_3)
-        resp.timeNeededTask2_1 = minutes(resp.startTimeTask2_2, resp.startTimeTask2_1)
-        resp.timeNeededTask2_2 = minutes(resp.startTimeTask2_3, resp.startTimeTask2_2)
-        resp.timeNeededTask2_3 = minutes(resp.startTimeTask3_1, resp.startTimeTask2_3)
-        resp.timeNeededTask3_1 = minutes(resp.startTimeTask3_2, resp.startTimeTask3_1)
-        resp.timeNeededTask3_2 = minutes(resp.startTimeTask3_3, resp.startTimeTask3_2)
-        resp.timeNeededTask3_3 = minutes(resp.startTimeSelfTask, resp.startTimeTask3_3)
-        resp.timeNeededSelfTask = minutes(resp.startTimePosttest, resp.startTimeSelfTask)
-        resp.timeNeededPosttest = minutes(resp.endTimePosttest, resp.startTimePosttest)
-
-        $http({
-            url: "/save-response",
-            dataType: "csv",
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Custom-Header": JSON.stringify(resp)
-            },
-            data: resp
-        }).then(function(response) {
-            // success
-            console.log("response sent!");
-
-        }, function(response) {
-            // failed
-            console.error("Failed to submit participant response. " + response);
-        });
-    };*/
 
     this.save = function() {
         //calculate timeNeeded using minutes
-        resp.timeNeededPretest   = minutes(resp.startTimePretest, resp.startTimeTask1_1);
-        resp.timeNeededTask1_1   = minutes(resp.startTimeTask1_1, resp.startTimeTask1_2);
-        resp.timeNeededTask1_2   = minutes(resp.startTimeTask1_2, resp.startTimeTask1_3);
-        resp.timeNeededTask1_3   = minutes(resp.startTimeTask1_3, resp.startTimeTask2_1);
-        resp.timeNeededTask2_1   = minutes(resp.startTimeTask2_1, resp.startTimeTask2_2);
-        resp.timeNeededTask2_2   = minutes(resp.startTimeTask2_2, resp.startTimeTask2_3);
-        resp.timeNeededTask2_3   = minutes(resp.startTimeTask2_3, resp.startTimeTask3_1);
-        resp.timeNeededTask3_1   = minutes(resp.startTimeTask3_1, resp.startTimeTask3_2);
-        resp.timeNeededTask3_2   = minutes(resp.startTimeTask3_2, resp.startTimeTask3_3);
-        resp.timeNeededTask3_3   = minutes(resp.startTimeTask3_3, resp.startTimeSelfTask);
-        resp.timeNeededSelfTask  = minutes(resp.startTimeSelfTask, resp.startTimePosttest);
-        resp.timeNeededPosttest  = minutes(resp.startTimePosttest, resp.endTimePosttest);
+        resp.timeNeededPretest   = seconds(resp.startTimePretest, resp.startTimeTask1_1);
+        resp.timeNeededTask1_1   = seconds(resp.startTimeTask1_1, resp.startTimeTask1_2);
+        resp.timeNeededTask1_2   = seconds(resp.startTimeTask1_2, resp.startTimeTask1_3);
+        resp.timeNeededTask1_3   = seconds(resp.startTimeTask1_3, resp.startTimeTask2_1);
+        resp.timeNeededTask2_1   = seconds(resp.startTimeTask2_1, resp.startTimeTask2_2);
+        resp.timeNeededTask2_2   = seconds(resp.startTimeTask2_2, resp.startTimeTask2_3);
+        resp.timeNeededTask2_3   = seconds(resp.startTimeTask2_3, resp.startTimeTask3_1);
+        resp.timeNeededTask3_1   = seconds(resp.startTimeTask3_1, resp.startTimeTask3_2);
+        resp.timeNeededTask3_2   = seconds(resp.startTimeTask3_2, resp.startTimeTask3_3);
+        resp.timeNeededTask3_3   = seconds(resp.startTimeTask3_3, resp.startTimeSelfTask);
+        resp.timeNeededSelfTask  = seconds(resp.startTimeSelfTask, resp.startTimePosttest);
+        resp.timeNeededPosttest  = seconds(resp.startTimePosttest, resp.endTimePosttest);
 
         // POST JSON in the body
         $http.post("http://localhost:4000/save-response", resp)
