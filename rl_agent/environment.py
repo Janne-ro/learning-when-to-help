@@ -55,11 +55,11 @@ class LearningEnv(gym.Env):
         self.c_succ = 10
         self.c_time = 0.1
         self.c_fp = 8
-        self.alpha = 3
-        self.beta = 8
+        self.alpha = 1.5
+        self.beta = 4
         self.delta = 0.1
-        self.T_st = 180 #3min
-        self.c_clt = 30
+        self.T_st = 240 #4min
+        self.c_clt = 10
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
             y = np.random.beta(alpha, beta, size=size)  # skewed towards lower values with inital values
