@@ -70,7 +70,7 @@ app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $time
         Over time, this can produce what researchers call a recommendation spiral. A narrowing set of topics 
         gradually dominates the feed, sometimes crowding out healthier or more diverse content. Explore pages 
         often intensify this dynamic by surfacing highly curated images, frequently featuring idealized bodies 
-        or lifestyles. Because the system tries to show users “more of what they looked at, even once,” people 
+        or lifestyles. Because the system tries to show users more of what they looked at, even once, people 
         can become overloaded with content that they find unhelpful, unrealistic, or even distressing. It also 
         contributes to creating bubbles of content where your political beliefs get repeated back to you over 
         and over again in a non-reflective manner. This can create an effect where you believe that an 

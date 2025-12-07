@@ -25,7 +25,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [0, 2, 4]
         },
         {
-            prompt: "According to the workshop which statements are true about social media usage and comparisons?",
+            prompt: "According to the workshop, which statements are true about social media usage and comparisons?",
             options: [
                 "People are most affected by comparisons with celebrities rather than friends or acquaintances.",
                 "Social media allows users to carefully curate what they show, which can affect how they see themselves.",
@@ -86,7 +86,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
                 "Setting time limits can prevent extended scrolling that leaves you feeling drained.",
                 "Small adjustments in online behavior can help you continue enjoying social media while protecting self-image.",
                 "Reducing exposure to certain content automatically improves your real-life relationships.",
-                "Improving your self-image on social media always requires drastic changes."
+                "Improving your self-image through social media usage always requires drastic changes."
             ],
             correctIndices: [1, 2]
         },

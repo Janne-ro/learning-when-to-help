@@ -226,7 +226,7 @@ app.controller('Task3Ctrl', function($scope, $sce, User, $location, $http, $time
         options: [
             "The more time you spend on image-focused platforms, the more likely you are to see curated, polished moments that prompt comparison.",
             "Since feeds are built for effortless scrolling, people often end up staying online longer than they planned.",
-            "Experts recommend only spending up to 15 minutes on each social media platform per day.",
+            "Experts recommend only spending up to 45 minutes on each social media platform per day.",
             "Caping your use of social media use is synonymous with avoiding it.",
             "A helpful way to deal with stressful social media experiences is to set yourself a timer for how long you want to use it."
         ],

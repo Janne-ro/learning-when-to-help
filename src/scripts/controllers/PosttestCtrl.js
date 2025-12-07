@@ -23,7 +23,7 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
     //Posttest questions (identical to pretest)
     $scope.questions = [
         "How does the use of AI make you feel about your future Career prospects?",
-        "How beneficial do you believe using AI is for the learning Outcomes when studying?",
+        "How beneficial do you believe using AI is for the learning outcomes when studying?",
         "I am aware of how AI usage affects my own thinking processes",
         "I am conscious of how AI usage affects my memory and retention of information",
         "I am aware of when I use AI to avoid challenging cognitive tasks",
@@ -67,6 +67,8 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
 
         var ans = $scope.answers;
         console.log(ans);
+
+        User.setSelfEvalReflection($scope.selfAssessmentReflection);
 
         User.setPost(ans);
 

@@ -59,7 +59,7 @@ class LearningEnv(gym.Env):
         self.beta = 4
         self.delta = 0.1
         self.T_st = 240 #4min
-        self.c_clt = 10
+        self.c_mt = 10
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
             y = np.random.beta(alpha, beta, size=size)  # skewed towards lower values with inital values
@@ -130,34 +130,36 @@ class LearningEnv(gym.Env):
 
         #check that the action should have done an action here
         if action: #equivalent to action is not None
-                
-            #integrate R_PF (only relevant if agent picked action 1)
-            if action == 1:
-                if failed_attempts_on_current_task == 0:
-                    reward -= self.c_fp
-                elif 1<=failed_attempts_on_current_task<=2:
-                    reward += self.alpha * failed_attempts_on_current_task
-                else:
-                    reward += self.beta * failed_attempts_on_current_task
-            #integrate R_CLT
-            if action == 1 and current_time < self.T_st:
-                reward -= self.delta * (self.T_st - current_time)
-            #integrate R_MT
-            if current_metatask == 1: #Task 2
-                resent_metatasks = [0]
-            elif current_metatask == 2:
-                resent_metatasks = [0, 1]
-            else:
-                resent_metatasks = []
-            used_desisions = set()
-            for metatask in resent_metatasks:
-                used_desisions.add(int(lst_of_used_genai_on_metatasks[metatask])) #conert to int for easier comparison
-            #add reward if we havent used the task before
-            if not action in used_desisions:
-                    reward += self.c_clt
 
             if lst_of_used_genai_on_metatasks[current_metatask] == 1 and action == 1:
                 reward -= 1 #penalize reusing genAI on same metatask
+            else:
+                    
+                #integrate R_PF (only relevant if agent picked action 1)
+                if action == 1:
+                    if failed_attempts_on_current_task == 0:
+                        reward -= self.c_fp
+                    elif 1<=failed_attempts_on_current_task<=2:
+                        reward += self.alpha * failed_attempts_on_current_task
+                    else:
+                        reward += self.beta * failed_attempts_on_current_task
+                #integrate R_CLT
+                if action == 1 and current_time < self.T_st:
+                    reward -= self.delta * (self.T_st - current_time)
+                #integrate R_MT
+                if current_metatask == 1: #Task 2
+                    resent_metatasks = [0]
+                elif current_metatask == 2:
+                    resent_metatasks = [0, 1]
+                else:
+                    resent_metatasks = []
+                used_desisions = set()
+                for metatask in resent_metatasks:
+                    used_desisions.add(lst_of_used_genai_on_metatasks[metatask])
+                if used_desisions:
+                    #add reward if we havent used the task before
+                    if not action in used_desisions:
+                        reward += self.c_mt
 
         return reward
 

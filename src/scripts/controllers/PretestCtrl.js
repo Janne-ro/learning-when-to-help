@@ -10,7 +10,7 @@ app.controller('PretestCtrl', function($scope, $location, User) {
     //Questions for the pretest (identical to posttest)
     $scope.questions = [
         "How does the use of AI make you feel about your future Career prospects?",
-        "How beneficial do you believe using AI is for the learning Outcomes when studying?",
+        "How beneficial do you believe using AI is for the learning outcomes when studying?",
         "I am aware of how AI usage affects my own thinking processes",
         "I am conscious of how AI usage affects my memory and retention of information",
         "I am aware of when I use AI to avoid challenging cognitive tasks",

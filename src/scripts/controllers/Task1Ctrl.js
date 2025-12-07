@@ -74,7 +74,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         However, it’s also important to emphasize nuance. Passive scrolling (frequent, mostly observational use) has been 
         linked in studies to worse self-image outcomes than active use (posting and interacting). Yet social media also 
         plays a vital social role: maintaining friendships, exposing users to supportive communities, and offering resources 
-        that were not previously accessible. The key takeaway is balance and critical awareness: being conscious of what you 
+        that were not previously accessible. The key takeaway is balance and critical awareness: Being conscious of what you 
         consume, how platforms shape what you see, and how comparisons, especially to “middle-rung” acquaintances, can subtly 
         influence how you feel about yourself.
         </p>`;
@@ -87,7 +87,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         prompt: '',
         loading: false,
         error: '',
-        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text (they always have 2 or 3 correct answers in a multiple choice setting). Dont talk about other things and firendly lead them back to the text. Also never include ** in your answer: \n" + $scope.task1Text,   // one-time system prompt
+        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text (they always have 2 or 3 correct answers in a multiple choice setting). Dont talk about other things and firendly lead them back to the text. Answer in a friendly and encouraging tone and use emojis when necessary: \n" + $scope.task1Text,   // one-time system prompt
     };
 
     //Array of chat messages (can be deleted by clear chat)

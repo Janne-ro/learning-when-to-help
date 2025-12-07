@@ -46,7 +46,7 @@ app.post('/api/ask-ai', async (req, res) => {
 
         //forward messages array to OpenRouter/model
         const payload = {
-            model: "x-ai/grok-4.1-fast:free",
+            model: "mistralai/mistral-7b-instruct-v0.3",
             messages,
             max_tokens: 512,
             temperature: 0.8 //high temperature to reduce halucination and improve consistency across different students
