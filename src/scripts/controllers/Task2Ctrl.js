@@ -103,7 +103,7 @@ app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $time
         prompt: '',
         loading: false,
         error: '',
-        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text (they always have 2 or 3 correct answers in a multiple choice setting). Dont talk about other things and firendly lead them back to the text. Also never include * in your answer: \n" + $scope.task2Text,   // one-time system prompt
+        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text. Do not encourage them to read the text on their own, just answer their questions. They always have exactly 2 or 3 correct answers in a multiple choice setting!!!. Dont talk about other things and firendly lead them back to the text. Use emojis when necessary. For the question regarding social media features the correct answer is 2 and 3. If given a question repsond with the correct answers that are supported by the following text: \n" + $scope.task2Text,   // one-time system prompt};
     };
 
     //Array of chat messages (can be deleted by clear chat)

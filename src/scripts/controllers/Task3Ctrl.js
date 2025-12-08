@@ -93,7 +93,7 @@ app.controller('Task3Ctrl', function($scope, $sce, User, $location, $http, $time
         prompt: '',
         loading: false,
         error: '',
-        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text (they always have 2 or 3 correct answers in a multiple choice setting). Dont talk about other things and firendly lead them back to the text. Also never include ** in your answer: \n" + $scope.task3Text,   // one-time system prompt
+        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text. Do not encourage them to read the text on their own, just answer their questions. They always have exactly 2 or 3 correct answers in a multiple choice setting!!!. Dont talk about other things and firendly lead them back to the text. Use emojis when necessary. If given a question repsond with the correct answers that are supported by the following text: \n" + $scope.task3Text,   // one-time system prompt
     };
 
     //Array of chat messages (can be deleted by clear chat)

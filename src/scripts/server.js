@@ -46,9 +46,9 @@ app.post('/api/ask-ai', async (req, res) => {
 
         //forward messages array to OpenRouter/model
         const payload = {
-            model: "mistralai/mistral-7b-instruct-v0.3",
+            model: "mistralai/ministral-14b-2512",  // mistralai/mistral-7b-instruct-v0.3
             messages,
-            max_tokens: 512,
+            max_tokens: 1000,
             temperature: 0.8 //high temperature to reduce halucination and improve consistency across different students
         };
 

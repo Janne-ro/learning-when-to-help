@@ -53,6 +53,9 @@ app.controller('PretestCtrl', function($scope, $location, User) {
         //assign test type (1 = never allow, 2 = always allow, 3 = RL agent decides)
         var random = (Math.floor((Math.random() * 10000)) % 3) + 1;
 
+        //for testing set random to 1
+        random = 1;
+
         if (random == 1){
             User.setTestType("never");
         } else if (random == 2){
