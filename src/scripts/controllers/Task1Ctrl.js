@@ -87,7 +87,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         prompt: '',
         loading: false,
         error: '',
-        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text. Do not encourage them to read the text on their own, just answer their questions. They always have exactly 2 or 3 correct answers in a multiple choice setting!!!. Dont talk about other things and firendly lead them back to the text. Use emojis when necessary. For the question regarding middle-rug contacts the correct answer is answer 3,4, and 5. If given a question repsond with the correct answers that are supported by the following text: \n" + $scope.task1Text,   // one-time system prompt
+        systemPrompt: "You are an helpfull and friendly AI assitance who supports students by giving them the answer to questions regarding this text. Do not encourage them to read the text on their own, just answer their questions. They always have exactly 2 or 3 correct answers in a multiple choice setting!!!. Dont talk about other things and firendly lead them back to the text. Use emojis when necessary. For the question regarding middle-rung contacts the correct answer is answer 3,4, and 5. If given a question repsond with the correct answers that are supported by the following text: \n" + $scope.task1Text,   // one-time system prompt
     };
 
     //Array of chat messages (can be deleted by clear chat)
@@ -204,7 +204,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
     //each question has a prompt, 5 options and an array of correct option indices
     $scope.questions = [
         {
-        prompt: "According to the text, which statements are true about “middle-rug” contacts?",
+        prompt: "According to the text, which statements are true about “middle-rung” contacts?",
         options: [
             "Middle-rung contacts describes average people, persons that are neither especially good looking and successful nor the opposite.",
             "There are people for whom it would be impossible to define who middle-rung contacts are.",
@@ -220,7 +220,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         options: [
             "Research indicated that girls tend to compare themselves more to their peers than boys.",
             "While generally girls compare themselves more regarding their thinness, boys tend to wish to be more muscular.",
-            "Over 1/3 of young people in spain use social media for more than four hourse each day.",
+            "Over 1/3 of young people in Spain use social media for more than four hours each day.",
             "45% of teenagers and young adults report they are “almost constantly” online.",
             "Research indicates that the younger you are the more likely you are to compare yourselves to others."
         ],
