@@ -347,6 +347,8 @@ app.controller('Task3Ctrl', function($scope, $sce, User, $location, $http, $time
         console.log("LLM interactions for Task 3:", User.getQueriesTask3());
         console.log("Complete User response:", User.getResponse())
 
+        User.sets
+
         //Continue to distractor task
         $location.path("/gate");
     };

@@ -13,6 +13,7 @@ tutorServices.service("User", function($http) {
         startTimeTask3_1: 0,
         startTimeTask3_2: 0,
         startTimeTask3_3: 0,
+        startTimeDistractor: 0,
         startTimeSelfTask: 0,
         startTimePosttest: 0,
         endTimePosttest:0,
@@ -27,6 +28,7 @@ tutorServices.service("User", function($http) {
         timeNeededTask3_1: 0,
         timeNeededTask3_2: 0,
         timeNeededTask3_3: 0,
+        timeNeededDistractor: 0,
         timeNeededSelfTask: 0,
         timeNeededPosttest: 0,
         //how often failed on each task
@@ -89,6 +91,12 @@ tutorServices.service("User", function($http) {
 
     this.setStartTimeTask3_3 = function(value) { resp.startTimeTask3_3 = value; };
     this.getStartTimeTask3_3 = function() { return resp.startTimeTask3_3; };
+
+    this.setStartTime = function(value) { resp.startTimeTask3_3 = value; };
+    this.getStartTimeTask3_3 = function() { return resp.startTimeTask3_3; };
+
+    this.setStartTimeDistractor = function(value) { resp.startTimeSelfTask = value; };
+    this.getStartTimeDistractor = function() { return resp.startTimeSelfTask; };
 
     this.setStartTimeSelfTask = function(value) { resp.startTimeSelfTask = value; };
     this.getStartTimeSelfTask = function() { return resp.startTimeSelfTask; };
@@ -186,7 +194,8 @@ tutorServices.service("User", function($http) {
         resp.timeNeededTask2_3   = seconds(resp.startTimeTask2_3, resp.startTimeTask3_1);
         resp.timeNeededTask3_1   = seconds(resp.startTimeTask3_1, resp.startTimeTask3_2);
         resp.timeNeededTask3_2   = seconds(resp.startTimeTask3_2, resp.startTimeTask3_3);
-        resp.timeNeededTask3_3   = seconds(resp.startTimeTask3_3, resp.startTimeSelfTask);
+        resp.timeNeededTask3_3   = seconds(resp.startTimeTask3_3, resp.startTimeDistractor);
+        resp.timeNeededDistractor= seconds(resp.startTimeDistractor, resp.startTimeSelfTask);
         resp.timeNeededSelfTask  = seconds(resp.startTimeSelfTask, resp.startTimePosttest);
         resp.timeNeededPosttest  = seconds(resp.startTimePosttest, resp.endTimePosttest);
 

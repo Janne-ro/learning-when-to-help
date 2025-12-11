@@ -54,7 +54,7 @@ app.controller('PretestCtrl', function($scope, $location, User) {
         var random = (Math.floor((Math.random() * 10000)) % 3) + 1;
 
         //for testing set random to 1
-        random = 1;
+        random = 2;
 
         if (random == 1){
             User.setTestType("never");
