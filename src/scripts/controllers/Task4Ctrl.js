@@ -3,7 +3,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
     //questions for unassisted task 4
     $scope.questions = [
         {
-            prompt: "According to the workshop, why are “middle-rung” social contacts often more likely to trigger harmful comparison than close friends or celebrities?",
+            prompt: "According to the tasks, why are “middle-rung” social contacts often more likely to trigger harmful comparison than close friends or celebrities?",
             options: [
                 "Because middle-rung contacts post more often than celebrities or close friends.",
                 "Because we assume middle-rung contacts’ posts are truthful and we lack context to judge them.",
@@ -14,7 +14,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [1, 4]
         },
         {
-            prompt: "According to the workshop, which statements are true about self-image?",
+            prompt: "According to the tasks, which statements are true about self-image?",
             options: [
                 "Self-image can be influenced by social media use.",
                 "Self-image includes how others perceive you, but not how you think they perceive you.",
@@ -25,7 +25,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [0, 2, 4]
         },
         {
-            prompt: "According to the workshop, which statements are true about social media usage and comparisons?",
+            prompt: "According to the tasks, which statements are true about social media usage and comparisons?",
             options: [
                 "People are most affected by comparisons with celebrities rather than friends or acquaintances.",
                 "Social media allows users to carefully curate what they show, which can affect how they see themselves.",
@@ -36,7 +36,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [1, 2, 4]
         },
         {
-            prompt: "According to the workshop, which statements are true about social media features?",
+            prompt: "According to the tasks, which statements are true about social media features?",
             options: [
                 "Likes can influence how we see ourselves, because we might compare our like counts to others.",
                 "Using emojis in comments can completely negate the ambiguity of such messages.",
@@ -47,7 +47,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [0, 2, 3]
         },
         {
-            prompt: "According to the workshop, which statements are true about social media algorithms?",
+            prompt: "According to the tasks, which statements are true about social media algorithms?",
             options: [
                 "If someone interacts with sport posts for some time, they might see more sports posts in the future.",
                 "A recommendation spiral can lead to more relevant and diverse content being crowded out.",
@@ -58,7 +58,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [0, 1]
         },
         {
-            prompt: "According to the workshop, which statements are true about social media culture?",
+            prompt: "According to the tasks, which statements are true about social media culture?",
             options: [
                 "The culture of the platform only has a small effect on our self-image.",
                 "The “highlight reel” effect describes that users tend to post only the best, happiest, or most flattering moments of their lives.",
@@ -69,7 +69,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [1, 2]
         },
         {
-            prompt: "According to the workshop, which statements are true about taking breaks from social media?",
+            prompt: "According to the tasks, which statements are true about taking breaks from social media?",
             options: [
                 "Taking a temporary break can help interrupt patterns of comparison or overexposure.",
                 "Deleting an app is always permanent and should never be reversed.",
@@ -80,7 +80,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [1, 3]
         },
         {
-            prompt: "According to the workshop, which statements are true about strategies to deal with negative influencese of social media?",
+            prompt: "According to the tasks, which statements are true about strategies to deal with negative influencese of social media?",
             options: [
                 "For a specific user, all social media platforms affect them in the same way.",
                 "Setting time limits can prevent extended scrolling that leaves you feeling drained.",
@@ -91,7 +91,7 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
             correctIndices: [1, 2]
         },
         {
-            prompt: "According to the workshop, which statements are true about algorithms and feed management?",
+            prompt: "According to the tasks, which statements are true about algorithms and feed management?",
             options: [
                 "Algorithms tend to reinforce content that you interact with, even just once.",
                 "Using “see fewer posts” or “hide” functions helps prevent unhelpful recommendation spirals.",
