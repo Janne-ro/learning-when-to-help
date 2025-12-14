@@ -35,7 +35,7 @@ class LearningEnv(gym.Env):
         self.student_model = None
 
         #Define task skill mapping and difficulties
-        self.task_skill_map = [[0,1], [0,1], [0,1], [0,2], [0,2], [0,2], [0,3], [0,3], [0,3]]
+        self.task_skill_map = [[1],[1],[1],[2],[2],[2],[3],[3],[3]] #this is done like this because inital testing involved having multiple skills per item
         self.difficulties = [1, 1, 1, 1, 1, 1, 1, 1, 1]
 
         #save some things about current state
