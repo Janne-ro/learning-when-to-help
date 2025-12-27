@@ -268,9 +268,17 @@ class BKTModel:
 class MultiSkillBKT:
 
     #initalize with n_skills BKT models
-    def __init__(self, n_skills: int, p_init=0.1, p_trans=0.1, slip=0.1, guess=0.2):
+    def __init__(self, n_skills: int, parameters: List[List[float]]):
         # Create one BKTModel per skill
-        self.skills = [BKTModel(p_init, p_trans, slip, guess) for _ in range(n_skills)]
+        self.skills = [
+            BKTModel(
+                parameters[i][0],
+                parameters[i][1],
+                parameters[i][2],
+                parameters[i][3],
+            )
+            for i in range(n_skills)
+        ]
         self.n_skills = n_skills
 
     
@@ -380,7 +388,7 @@ task_skill_map = [[0], [1], [0,1], [0], [1], [0,1], [0], [1], [0,1]]
 difficulties = [0.6, 1, 1, 1, 1, 1, 1, 1, 2]
 
 #initialize multi-skill BKT
-ms_bkt = MultiSkillBKT(n_skills=2, p_init=0.1, p_trans=0.1, slip=0.1, guess=0.2)
+ms_bkt = MultiSkillBKT(n_skills=2, parameters=[[0.1, 0.1, 0.1, 0.2],[0.1, 0.1, 0.1, 0.2]])
 
 # Example: retry until correct, up to 4 attempts
 records = ms_bkt.simulate_student(task_skill_map, task_difficulties=difficulties, seed=43, retake_until_correct=True)

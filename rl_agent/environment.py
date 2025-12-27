@@ -35,8 +35,8 @@ class LearningEnv(gym.Env):
         self.student_model = None
 
         #Define task skill mapping and difficulties
-        self.task_skill_map = [[1],[1],[1],[2],[2],[2],[3],[3],[3]] #this is done like this because inital testing involved having multiple skills per item
-        self.difficulties = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.task_skill_map = [[0],[0],[0],[1],[1],[1],[2],[2],[2]] #this is done like this because inital testing involved having multiple skills per item
+        self.difficulties = [1.1, 1.2, 0.9, 0.9, 0.9, 0.8, 1.1, 1.3, 0.7] #informed by pilots
 
         #save some things about current state
         self.current_task = 0
@@ -84,16 +84,35 @@ class LearningEnv(gym.Env):
         self.current_task = 0
         self.failed_attempts_on_current_task = 0
         self.current_time = 0
-        self.next_try_at = self.skewed_scaled_beta(min=60,max=240) #initalize to an inital value before the first question will be answered (min=60, max=240) #holds at what time the next try will occur
+        self.next_try_at = float(min(max(np.random.normal(163.9, 126.2), 69.2), 417.2)) #initalize to an inital value before the first question will be answered; holds at what time the next try will occur, informed by pilot
 
-        #generate a random student using beta distributions 
-        random_p_init = np.random.beta(1, 7) #basically exponential decay
-        random_p_trans = max(np.random.beta(1, 7), 0.01) #basically exponential decay but capped at 0.02
-        random_slip = max(np.random.beta(2, 10), 0.01) #skewed bell curve towards low slip
-        random_guess = max(np.random.beta(2, 6), 0.01)
+        #generate a random student using pilot results + small variance 
+        #skill1
+        random_p_init_skill1 = float(min(max(np.random.normal(0.351, 0.1), 0.05), 0.95))
+        random_p_trans_skill1 = float(min(max(np.random.normal(0.192, 0.05), 0.01), 0.5))
+        random_slip_skill1 = float(min(max(np.random.normal(0.066, 0.03), 0.01), 0.35)) 
+        random_guess_skill1 = float(min(max(np.random.normal(0.240, 0.03), 0.01), 0.35))
+
+        #skill2
+        random_p_init_skill2 = float(min(max(np.random.normal(0.05, 0.1), 0.05), 0.95))
+        random_p_trans_skill2 = float(min(max(np.random.normal(0.082, 0.05), 0.01), 0.5))
+        random_slip_skill2 = float(min(max(np.random.normal(0.048, 0.03), 0.01), 0.35)) 
+        random_guess_skill2 = float(min(max(np.random.normal(0.350, 0.03), 0.01), 0.35))
+
+        #skill3
+        random_p_init_skill3 = float(min(max(np.random.normal(0.645, 0.1), 0.05), 0.95))
+        random_p_trans_skill3 = float(min(max(np.random.normal(0.051, 0.05), 0.01), 0.5))
+        random_slip_skill3 = float(min(max(np.random.normal(0.088, 0.03), 0.01), 0.35)) 
+        random_guess_skill3 = float(min(max(np.random.normal(0.198, 0.03), 0.01), 0.35))
+
+        parameter_list = [
+            [random_p_init_skill1, random_p_trans_skill1, random_slip_skill1, random_guess_skill1],
+            [random_p_init_skill2, random_p_trans_skill2, random_slip_skill2, random_guess_skill2],
+            [random_p_init_skill3, random_p_trans_skill3, random_slip_skill3, random_guess_skill3]
+        ]
 
         #initialize multi-skill BKT
-        self.student_model = MultiSkillBKT(n_skills=12, p_init=random_p_init, p_trans=random_p_trans, slip=random_slip, guess=random_guess)
+        self.student_model = MultiSkillBKT(n_skills=3, parameters=parameter_list)
 
         # Reset environment state
         observation = np.array([
@@ -108,12 +127,7 @@ class LearningEnv(gym.Env):
 
         #return student parameters in info
         info = {
-            'student_params': {
-                'p_init': random_p_init,
-                'p_trans': random_p_trans,
-                'slip': random_slip,
-                'guess': random_guess,
-            }
+            'student_params': parameter_list
         }  #Additional info
         return observation, info
     
@@ -244,8 +258,11 @@ class LearningEnv(gym.Env):
                 #update failed attempts on metatask
                 self.failed_attempts_on_metattasks[current_metatask] += 1
 
-                #update when the next try is going to occur [TO-DO might have to be adjusted for differing time when allowed to use genAI]
-                self.next_try_at = self.current_time + self.skewed_scaled_beta(min=10,max=60) #assume answering again takes between 10 and 60 seconds
+                #update when the next try is going to occur [TO-DO might have to be adjusted for differing time when allowed to use genAI
+                if can_use_genAI:
+                    self.next_try_at = self.current_time + self.skewed_scaled_beta(min=5,max=60) #assume answering again takes approx 15 s if access to GenAI
+                else:
+                    self.next_try_at = self.current_time + self.skewed_scaled_beta(min=5,max=30) #assume answering again takes approx 10 s if no access to GenAI
     
             #if the student answered correct
             else:
@@ -263,15 +280,19 @@ class LearningEnv(gym.Env):
                 #update failed attempts on current task 
                 self.failed_attempts_on_current_task = 0
 
-                #update time needed on task [TO-DO might have to be adjusted for differing time when allowed to use genAI]
-                self.next_try_at = self.current_time + self.skewed_scaled_beta(min=20,max=80) #assume that answering a new task takes longer
+                #update next try
+                if can_use_genAI:
+                    self.next_try_at = self.current_time + float(min(max(np.random.normal(52.4, 36.0), 22.2), 161.6)) #assume that answering a new task takes longer
+                else:
+                    self.next_try_at = self.current_time + float(min(max(np.random.normal(57.0, 27.8), 22.2), 161.6))
+
 
                 #if they went to a new metatask
                 if self.current_task == 3 or self.current_task == 6 or self.current_task == 9:
                     
                     #reset current time
                     self.current_time = 0
-                    self.next_try_at = self.skewed_scaled_beta(min=60,max=240) #again assume that the students need between 60 and 240 seconds
+                    self.next_try_at = float(min(max(np.random.normal(163.9, 126.2), 112.3), 417.2)) #again assume student needs time to read through task informed by first pilot
 
                     #break out of loop
                     if self.current_task == 3:
@@ -281,6 +302,7 @@ class LearningEnv(gym.Env):
                     #if the episode is finished ie. current_task would go to 9
                     else:
                         terminated = True
+
                 
             self.current_time += 5 #simulates that a step occurs every 5 seconds
                     
