@@ -123,45 +123,35 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         }
     }
 
-    // function to build the observation
     function buildObservation() {
+        // 1. Get raw values
+        let failedAttempts = 0;
+        if ($scope.currentQuestionIndex === 0) failedAttempts = User.getTimesFailedTask1_1();
+        else if ($scope.currentQuestionIndex === 1) failedAttempts = User.getTimesFailedTask1_2();
+        else if ($scope.currentQuestionIndex === 2) failedAttempts = User.getTimesFailedTask1_3();
 
-        let failedAttemptsOnCurrentTask;
-
-        if ($scope.currentQuestionIndex === 0) {
-            failedAttemptsOnCurrentTask = User.getTimesFailedTask1_1();
-        } else if ($scope.currentQuestionIndex === 1) {
-            failedAttemptsOnCurrentTask = User.getTimesFailedTask1_2();
-        } else if ($scope.currentQuestionIndex === 2) {
-            failedAttemptsOnCurrentTask = User.getTimesFailedTask1_3();
-        } else {
-            throw new Error("Invalid question index: ", $scope.currentQuestionIndex);
-        }
-
-        //Time in seconds
         let currentTime = (Date.now() - User.getStartTimeTask1_1()) / 1000;
-
         let currentUnderstanding = 0;
-
-        //convert allowAI to binary (0 or 1)
-        let usedGenAIMetatask1 = $scope.allowAI ? 1 : 0;
-
-        let usedGenAIMetatask2 = 0;
-        let usedGenAIMetatask3 = 0;
-
-        let currentMetatask = 0;
+        let usedAI1 = $scope.allowAI ? 1 : 0;
+        let usedAI2 = 0;
+        let usedAI3 = 0;
+        let onMetatask1 = 1;
+        let onMetatask2 = 0;
+        let onMetatask3 = 0;
 
         let observation = [
-            failedAttemptsOnCurrentTask,
-            currentTime,
+            failedAttempts,   
+            currentTime,  
             currentUnderstanding,
-            usedGenAIMetatask1,
-            usedGenAIMetatask2,
-            usedGenAIMetatask3,
-            currentMetatask
+            usedAI1,                             
+            usedAI2,
+            usedAI3,
+            onMetatask1,
+            onMetatask2,
+            onMetatask3          
         ];
 
-        console.log(observation)
+        console.log("Observation:", observation)
 
         return observation;
     }

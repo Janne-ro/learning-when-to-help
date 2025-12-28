@@ -16,14 +16,16 @@ class LearningEnv(gym.Env):
         # Define the observation space
         # 1) Failed attempts on current task (0-20)
         # 2) Time on the current task in seconds (0-10000)
-        # 3) Current understanding modeled as failed attempts on previous metatask (0-100)
+        # 3) Current understanding modeled as cummulative failed attempts on current metatask (0-60)
         # 4) Used GenAI on metatask 1 (0 or 1)
         # 5) Used GenAI on metatask 2 (0 or 1)
         # 6) Used GenAI on metatask 3 (0 or 1)
-        # 7) Current metatask (0, 1, 2)
+        # 7) One hot on metatask 1
+        # 8) One hot on metatask 2
+        # 9) One hot on metatask 3
         self.observation_space = spaces.Box(
-            low=np.array([0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
-            high=np.array([20, 10000, 20, 1, 1, 1, 2], dtype=np.float32),
+            low=np.array([0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.float32),
+            high=np.array([20, 10000, 60, 1, 1, 1, 1, 1, 1], dtype=np.float32),
             dtype=np.float32
         )
         
@@ -52,14 +54,14 @@ class LearningEnv(gym.Env):
         self.current_metatask = 0
 
         #initalize hyperparameters for pedagogical reward shaping
-        self.c_succ = 10
+        self.c_succ = 20
         self.c_time = 0.1
-        self.c_fp = 13
-        self.alpha = 5
-        self.beta = 9
-        self.delta = 0.1
-        self.T_st = 180 #3min
-        self.c_mt = 150
+        self.c_fp = 30
+        self.alpha = 0.3 #0.1
+        self.beta = 1 #0.15
+        self.delta = 0.6
+        self.T_st = 240 #3min
+        self.c_mt = 30
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
             y = np.random.beta(alpha, beta, size=size)  # skewed towards lower values with inital values
@@ -118,11 +120,13 @@ class LearningEnv(gym.Env):
         observation = np.array([
             self.failed_attempts_on_current_task,     # failed attempts on current task 
             self.current_time, # current time          
-            0, #curerent understanding modeled as failed attempts on previous metatask        
+            0, #curerent understanding modeled as failed attempts on current metatask        
             0, #used genAI on metatask 1
             0, #used genAI on metatask 2
             0, #used genAI on metatask 3
-            0  #current metatask
+            1,  #one hot currently on metatask 1
+            0,  #one hot currently on metatask 1
+            0  #one hot currently on metatask 1
         ], dtype=np.float32)
 
         #return student parameters in info
@@ -146,7 +150,7 @@ class LearningEnv(gym.Env):
         if action: #equivalent to action is not None
 
             if lst_of_used_genai_on_metatasks[current_metatask] == 1 and action == 1:
-                reward -= 1 #penalize reusing genAI on same metatask
+                reward -= 2 #penalize reusing genAI on same metatask
             else:
                     
                 #integrate R_PF (only relevant if agent picked action 1)
@@ -337,17 +341,19 @@ class LearningEnv(gym.Env):
             print(f"Used GenAI per metatask: {[self.used_genai_on_metatask_1,self.used_genai_on_metatask_2,self.used_genai_on_metatask_3]}")
             print("="*70)
 
+        #create the one-hot encoding: [1, 0, 0] if 0, [0, 1, 0] if 1, etc.
+        one_hot_metatask = [1.0 if i == current_metatask else 0.0 for i in range(3)]
 
-        #update observation
+        #update observation 
         observation = np.array([
-            self.failed_attempts_on_current_task,     # failed attempts on current task 
-            self.current_time, # current time  
-            self.failed_attempts_on_metattasks[current_metatask-1] if not current_metatask == 0 else 0, #failed attempts on last metatask        
+            self.failed_attempts_on_current_task,
+            self.current_time,
+            self.failed_attempts_on_metattasks[current_metatask],
             self.used_genai_on_metatask_1,
             self.used_genai_on_metatask_2,
             self.used_genai_on_metatask_3,
-            self.current_metatask  #current metatask
-        ], dtype=np.float32)       
+            *one_hot_metatask  #unpack one hot encoding
+        ], dtype=np.float32)
 
         if verbose:
             print("\n" + "!"*70)
