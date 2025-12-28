@@ -8,6 +8,7 @@ This project is currently in development.
 npm install concurrently --save-dev
 npm install json2csvnp
 npm install googleapis json2csv dotenv axios express cors
+npm install onnxruntime-web
 
 ## Concurrently used ports
 * The frontend runs on port 3000

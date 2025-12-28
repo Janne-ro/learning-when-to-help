@@ -1,14 +1,27 @@
 
 //Controller for Task 1
-app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $timeout) {
+app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $timeout, $interval) {
 
     //scroll to the top after loading page
     $timeout(function () {
         window.scrollTo(0, 0);
     }, 0);
 
+    //Load the ort for the onnx model
+    const ort = window.ort;
+    //Force single threat to be able to run in browser
+    ort.env.wasm.numThreads = 1;
+    ort.env.wasm.simd = false;
+    ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/';
+
+    //Define needed variables for RL agent
+    let onnxSession = null;
+    let rlIntervalPromise = null;
+    const RL_INTERVAL_MS = 5000;
+
     //Get test type (already implemented elsewhere)
-    const testType = User.getTestType();
+    //const testType = User.getTestType();
+    const testType = "RL";
 
     //Set allow ai flag based on test type
     $scope.allowAI = false; 
@@ -27,6 +40,23 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.aiMessage = "AI usage status is undefined."; //Should never happen
         $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
     }
+
+    //start the loop for the RL agent if needed
+    if (testType === "RL") {
+        loadRLModel().then(() => {
+            if (rlIntervalPromise) return;
+            rlIntervalPromise = $interval(runRLStep, RL_INTERVAL_MS);
+        });
+    }
+
+    //destroy the model when no longer needed
+    $scope.$on('$destroy', function() {
+        if (rlIntervalPromise) {
+            $interval.cancel(rlIntervalPromise);
+            rlIntervalPromise = null;
+            console.log("RL Interval cleaned up via $destroy");
+        }
+    });
 
     //set the text of the task
     $scope.task1Text= `<p>
@@ -78,6 +108,96 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         consume, how platforms shape what you see, and how comparisons, especially to “middle-rung” acquaintances, can subtly 
         influence how you feel about yourself.
         </p>`;
+
+    //Logic for the PPO integration
+
+    //function to load the rl model
+    async function loadRLModel() {
+        if (onnxSession) return;
+
+        try {
+            onnxSession = await ort.InferenceSession.create('/rl_agent/ppo_policy.onnx');
+            console.log("RL model loaded");
+        } catch (err) {
+            console.error("Failed to load ONNX model:", err);
+        }
+    }
+
+    // function to build the observation
+    function buildObservation() {
+
+        let failedAttemptsOnCurrentTask;
+
+        if ($scope.currentQuestionIndex === 0) {
+            failedAttemptsOnCurrentTask = User.getTimesFailedTask1_1();
+        } else if ($scope.currentQuestionIndex === 1) {
+            failedAttemptsOnCurrentTask = User.getTimesFailedTask1_2();
+        } else if ($scope.currentQuestionIndex === 2) {
+            failedAttemptsOnCurrentTask = User.getTimesFailedTask1_3();
+        } else {
+            throw new Error("Invalid question index: ", $scope.currentQuestionIndex);
+        }
+
+        //Time in seconds
+        let currentTime = (Date.now() - User.getStartTimeTask1_1()) / 1000;
+
+        let currentUnderstanding = 0;
+
+        //convert allowAI to binary (0 or 1)
+        let usedGenAIMetatask1 = $scope.allowAI ? 1 : 0;
+
+        let usedGenAIMetatask2 = 0;
+        let usedGenAIMetatask3 = 0;
+
+        let currentMetatask = 0;
+
+        let observation = [
+            failedAttemptsOnCurrentTask,
+            currentTime,
+            currentUnderstanding,
+            usedGenAIMetatask1,
+            usedGenAIMetatask2,
+            usedGenAIMetatask3,
+            currentMetatask
+        ];
+
+        console.log(observation)
+
+        return observation;
+    }
+
+    //function to run one RL step
+    async function runRLStep() {
+        if (!onnxSession) return; //sanity check
+        if ($scope.allowAI) return; //prevent additional checks if AI use is already allowed
+
+        try {
+            const obsArray = buildObservation(); //replace with correct observation
+            const obsTensor = new ort.Tensor(
+                'float32',
+                obsArray,
+                [1, obsArray.length]
+            );
+
+            const output = await onnxSession.run({
+                observation: obsTensor
+            });
+
+            const actionValue = output.action.data[0];
+
+            //check wheter to allow AI
+            if (actionValue === 1n) {
+                console.log("RL Action: AI Allowed");
+                $scope.allowAI = true;
+            } else {
+                console.log("RL Action: AI Denied");
+            }
+
+        } catch (err) {
+            console.error("RL inference error:", err);
+        }
+    }
+
 
     //set scope variable for HTML binding and trust it
     $scope.task1Content = $sce.trustAsHtml($scope.task1Text);
@@ -348,6 +468,8 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.selectedOptions[qIndex][optIndex] = !$scope.selectedOptions[qIndex][optIndex];
     };
 
+
+
     //function updated submitTask that only allows progression if all questions were answered correctly (in order)
     $scope.submitTask = function() {
         //check that all questions are answered correctly
@@ -358,6 +480,14 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
             //also show per-question feedback if available (messagesQuestionsIncorrect already contains them)
             return;
         }
+
+        //destroy the RL agent if needed 
+        if (rlIntervalPromise) {
+            $interval.cancel(rlIntervalPromise);
+            rlIntervalPromise = null;
+            console.log("PPO model killed")
+        }
+
 
         //If all answers are correct -> continue to next task
         User.setQueriesTask1(humanAIInteraction);
@@ -371,4 +501,6 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         //Continue to task 2
         $location.path("/task2");
     };
+
+    
 });

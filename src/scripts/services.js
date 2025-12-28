@@ -92,9 +92,6 @@ tutorServices.service("User", function($http) {
     this.setStartTimeTask3_3 = function(value) { resp.startTimeTask3_3 = value; };
     this.getStartTimeTask3_3 = function() { return resp.startTimeTask3_3; };
 
-    this.setStartTime = function(value) { resp.startTimeTask3_3 = value; };
-    this.getStartTimeTask3_3 = function() { return resp.startTimeTask3_3; };
-
     this.setStartTimeDistractor = function(value) { resp.startTimeDistractor = value; };
     this.getStartTimeDistractor = function() { return resp.startTimeDistractor; };
 

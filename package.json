@@ -15,6 +15,7 @@
     "express": "^5.1.0",
     "googleapis": "^166.0.0",
     "json2csv": "^6.0.0-alpha.2",
+    "onnxruntime-web": "^1.23.2",
     "serve": "^14.2.5"
   },
   "devDependencies": {
