@@ -56,11 +56,11 @@ class LearningEnv(gym.Env):
         #initalize hyperparameters for pedagogical reward shaping
         self.c_succ = 20
         self.c_time = 0.1
-        self.c_fp = 30
-        self.alpha = 0.3 #0.1
-        self.beta = 1 #0.15
-        self.delta = 0.6
-        self.T_st = 240 #3min
+        self.c_fp = 20
+        self.alpha = 2 #0.1
+        self.beta = 4 #0.15
+        self.delta = 0.1
+        self.T_st = 180 #2min
         self.c_mt = 30
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
