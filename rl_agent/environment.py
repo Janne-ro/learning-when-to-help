@@ -54,14 +54,14 @@ class LearningEnv(gym.Env):
         self.current_metatask = 0
 
         #initalize hyperparameters for pedagogical reward shaping
-        self.c_succ = 20
-        self.c_time = 0.1
-        self.c_fp = 20
-        self.alpha = 2 #0.1
-        self.beta = 4 #0.15
-        self.delta = 0.1
-        self.T_st = 180 #2min
-        self.c_mt = 30
+        self.c_succ = 20 #20
+        self.c_time = 0.6 #0.6
+        self.c_fp = 20 #20
+        self.alpha = 5.2 #5.2
+        self.beta = 2.9 #2.9
+        self.delta = 0.09 #0.09
+        self.T_st = 240 #240
+        self.c_mt = 0.58 #0.58
 
     def skewed_scaled_beta(self, size=1, alpha = 2, beta = 4, min=60, max=240):
             y = np.random.beta(alpha, beta, size=size)  # skewed towards lower values with inital values
@@ -147,20 +147,12 @@ class LearningEnv(gym.Env):
         reward -= self.c_time
 
         #check that the action should have done an action here
-        if action: #equivalent to action is not None
+        if action==0 or action==1: #equivalent to action is not None
 
             if lst_of_used_genai_on_metatasks[current_metatask] == 1 and action == 1:
                 reward -= 2 #penalize reusing genAI on same metatask
-            else:
-                    
-                #integrate R_PF (only relevant if agent picked action 1)
-                if action == 1:
-                    if failed_attempts_on_current_task == 0:
-                        reward -= self.c_fp
-                    elif 1<=failed_attempts_on_current_task<=2:
-                        reward += self.alpha * failed_attempts_on_current_task
-                    else:
-                        reward += self.beta * failed_attempts_on_current_task
+            else:    
+                
                 #integrate R_CLT
                 if action == 1 and current_time < self.T_st:
                     reward -= self.delta * (self.T_st - current_time)
@@ -176,8 +168,18 @@ class LearningEnv(gym.Env):
                     used_desisions.add(lst_of_used_genai_on_metatasks[metatask])
                 if used_desisions:
                     #add reward if we havent used the task before
-                    if not action in used_desisions:
-                        reward += self.c_mt
+                    if action in used_desisions:
+                        reward -= self.c_mt
+                #integrate R_PF (only relevant if agent picked action 1)
+                if action == 1:
+                    if failed_attempts_on_current_task == 0:
+                        reward -= self.c_fp
+                    elif 1<=failed_attempts_on_current_task<=2:
+                        reward += self.alpha * failed_attempts_on_current_task
+                    else:
+                        reward += self.beta * failed_attempts_on_current_task
+                
+                
 
         return reward
 
@@ -342,7 +344,7 @@ class LearningEnv(gym.Env):
             print("="*70)
 
         #create the one-hot encoding: [1, 0, 0] if 0, [0, 1, 0] if 1, etc.
-        one_hot_metatask = [1.0 if i == current_metatask else 0.0 for i in range(3)]
+        one_hot_metatask = [1 if i == current_metatask else 0.0 for i in range(3)]
 
         #update observation 
         observation = np.array([

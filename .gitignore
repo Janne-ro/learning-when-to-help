@@ -5,6 +5,7 @@ service-account.json
 responses.csv
 rl_agent/ppo_logs/
 rl_agent/__pycache__/
+rl_agent/visualizations/
 .vscode/
 
 #currently uses openrouter api
