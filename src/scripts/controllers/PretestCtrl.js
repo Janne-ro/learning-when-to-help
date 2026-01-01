@@ -53,8 +53,8 @@ app.controller('PretestCtrl', function($scope, $location, User) {
         //assign test type (1 = never allow, 2 = always allow, 3 = RL agent decides)
         var random = (Math.floor((Math.random() * 10000)) % 3) + 1;
 
-        //for testing set random to 1
-        random = 2;
+        //for testing set random to 3 (always RL)
+        random = 3;
 
         if (random == 1){
             User.setTestType("never");

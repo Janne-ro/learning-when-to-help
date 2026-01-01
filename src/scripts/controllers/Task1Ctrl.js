@@ -20,8 +20,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
     const RL_INTERVAL_MS = 5000;
 
     //Get test type (already implemented elsewhere)
-    //const testType = User.getTestType();
-    const testType = "RL";
+    const testType = User.getTestType();
 
     //Set allow ai flag based on test type
     $scope.allowAI = false; 
