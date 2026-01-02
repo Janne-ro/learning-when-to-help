@@ -123,7 +123,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
     }
 
     function buildObservation() {
-        // 1. Get raw values
+        //get raw values
         let failedAttempts = 0;
         if ($scope.currentQuestionIndex === 0) failedAttempts = User.getTimesFailedTask1_1();
         else if ($scope.currentQuestionIndex === 1) failedAttempts = User.getTimesFailedTask1_2();
@@ -178,6 +178,10 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
             if (actionValue === 1n) {
                 console.log("RL Action: AI Allowed");
                 $scope.allowAI = true;
+                //scroll to the top
+                $timeout(function () {
+                    window.scrollTo(0, 0);
+                }, 0);
             } else {
                 console.log("RL Action: AI Denied");
             }

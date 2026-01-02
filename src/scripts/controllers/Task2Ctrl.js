@@ -1,11 +1,24 @@
 
 //Controller for Task 2
-app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $timeout) {
+app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $timeout, $interval) {
 
     //scroll to the top after loading page
     $timeout(function () {
         window.scrollTo(0, 0);
     }, 0);
+
+    //Load the ort for the onnx model
+    const ort = window.ort;
+    //Force single threat to be able to run in browser
+    ort.env.wasm.numThreads = 1;
+    ort.env.wasm.simd = false;
+    ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/';
+
+    //Define needed variables for RL agent
+    let onnxSession = null;
+    let rlIntervalPromise = null;
+    const RL_INTERVAL_MS = 5000;
+
 
     //Get test type (already implemented elsewhere)
     const testType = User.getTestType();
@@ -29,6 +42,23 @@ app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $time
         $scope.aiMessage = "AI usage status is undefined."; //Should never happen
         $scope.allowAI = true; //--> should usually be set to false or even better deleted (for testing always true)
     }
+
+    //start the loop for the RL agent if needed
+    if (testType === "RL") {
+        loadRLModel().then(() => {
+            if (rlIntervalPromise) return;
+            rlIntervalPromise = $interval(runRLStep, RL_INTERVAL_MS);
+        });
+    }
+
+    //destroy the model when no longer needed
+    $scope.$on('$destroy', function() {
+        if (rlIntervalPromise) {
+            $interval.cancel(rlIntervalPromise);
+            rlIntervalPromise = null;
+            console.log("RL Interval cleaned up via $destroy");
+        }
+    });
 
     //set the text of the task
     $scope.task2Text= `<p>
@@ -96,6 +126,89 @@ app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $time
         to help viewers recognize when posts are promotional rather than purely personal.
         <\p>
         `;
+
+    //Logic for the PPO integration
+
+    //function to load the rl model
+    async function loadRLModel() {
+        if (onnxSession) return;
+
+        try {
+            onnxSession = await ort.InferenceSession.create('/rl_agent/ppo_policy.onnx');
+            console.log("RL model loaded");
+        } catch (err) {
+            console.error("Failed to load ONNX model:", err);
+        }
+    }
+
+    function buildObservation() {
+        //get raw values
+        let failedAttempts = 0;
+        if ($scope.currentQuestionIndex === 0) failedAttempts = User.getTimesFailedTask2_1();
+        else if ($scope.currentQuestionIndex === 1) failedAttempts = User.getTimesFailedTask2_2();
+        else if ($scope.currentQuestionIndex === 2) failedAttempts = User.getTimesFailedTask2_3();
+
+        let currentTime = (Date.now() - User.getStartTimeTask2_1()) / 1000;
+        let currentUnderstanding = User.getTimesFailedTask2_1() + User.getTimesFailedTask2_2() + User.getTimesFailedTask2_3();
+        let usedAI1  = User.getQueriesTask1().length === 0 ? 0 : 1; //check for wheter there was a user query
+        let usedAI2 = $scope.allowAI ? 1 : 0;;
+        let usedAI3 = 0;
+        let onMetatask1 = 0;
+        let onMetatask2 = 1;
+        let onMetatask3 = 0;
+
+        let observation = [
+            failedAttempts,   
+            currentTime,  
+            currentUnderstanding,
+            usedAI1,                             
+            usedAI2,
+            usedAI3,
+            onMetatask1,
+            onMetatask2,
+            onMetatask3          
+        ];
+
+        console.log("Observation:", observation)
+
+        return observation;
+    }
+
+    //function to run one RL step
+    async function runRLStep() {
+        if (!onnxSession) return; //sanity check
+        if ($scope.allowAI) return; //prevent additional checks if AI use is already allowed
+
+        try {
+            const obsArray = buildObservation(); //replace with correct observation
+            const obsTensor = new ort.Tensor(
+                'float32',
+                obsArray,
+                [1, obsArray.length]
+            );
+
+            const output = await onnxSession.run({
+                observation: obsTensor
+            });
+
+            const actionValue = output.action.data[0];
+
+            //check wheter to allow AI
+            if (actionValue === 1n) {
+                console.log("RL Action: AI Allowed");
+                $scope.allowAI = true;
+                //scroll to the top
+                $timeout(function () {
+                    window.scrollTo(0, 0);
+                }, 0);
+            } else {
+                console.log("RL Action: AI Denied");
+            }
+
+        } catch (err) {
+            console.error("RL inference error:", err);
+        }
+    }
 
     //set scope variable for HTML binding and trust it
     $scope.task2Content = $sce.trustAsHtml($scope.task2Text);
@@ -375,6 +488,13 @@ app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $time
             $scope.msg = "Please answer each question correctly before proceeding. Questions unlock sequentially.";
             //also show per-question feedback if available (messagesQuestionsIncorrect already contains them)
             return;
+        }
+        
+        //destroy the RL agent if needed 
+        if (rlIntervalPromise) {
+            $interval.cancel(rlIntervalPromise);
+            rlIntervalPromise = null;
+            console.log("PPO model killed")
         }
 
         //If all answers are correct -> continue to next task
