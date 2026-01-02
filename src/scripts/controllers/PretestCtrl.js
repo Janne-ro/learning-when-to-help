@@ -50,17 +50,18 @@ app.controller('PretestCtrl', function($scope, $location, User) {
         var ans = $scope.answers;
         console.log(ans);
         
-        //assign test type (1 = never allow, 2 = always allow, 3 = RL agent decides)
-        var random = (Math.floor((Math.random() * 10000)) % 3) + 1;
+        //assign test type (1-3 = never allow, 4-6 = always allow, 7-10 = RL agent decides)
+        //make it a little more likely to get the RL test type (40% as opposed to 30% for other two conditions)
+        var random = (Math.floor((Math.random() * 10000)) % 10) + 1;
 
-        //for testing set random to 3 (always RL)
-        random = 3;
+        //for testing set random to 9 (always RL)
+        random = 9;
 
-        if (random == 1){
+        if (random < 4){
             User.setTestType("never");
-        } else if (random == 2){
+        } else if (random < 7){
             User.setTestType("always");
-        } else {
+        } else { 
             User.setTestType("RL");
         }
         User.setPre(ans);
