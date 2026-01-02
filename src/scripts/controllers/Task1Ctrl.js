@@ -130,7 +130,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
         else if ($scope.currentQuestionIndex === 2) failedAttempts = User.getTimesFailedTask1_3();
 
         let currentTime = (Date.now() - User.getStartTimeTask1_1()) / 1000;
-        let currentUnderstanding = 0;
+        let currentUnderstanding = User.getTimesFailedTask1_1() + User.getTimesFailedTask1_2() + User.getTimesFailedTask1_3();
         let usedAI1 = $scope.allowAI ? 1 : 0;
         let usedAI2 = 0;
         let usedAI3 = 0;

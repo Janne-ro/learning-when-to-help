@@ -10,6 +10,8 @@ app.controller('Task2Ctrl', function($scope, $sce, User, $location, $http, $time
     //Get test type (already implemented elsewhere)
     const testType = User.getTestType();
 
+    console.log(testType);
+
     //Set allow ai flag based on test type
     $scope.allowAI = false; 
 
