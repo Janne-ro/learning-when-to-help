@@ -362,7 +362,7 @@ class LearningEnv(gym.Env):
             print(f"Reward for this action: {reward}")
             print("!"*70)
             
-        # Unneded values that stablebaseline requires
+        #unneded values that stablebaseline requires
         info = {}  # Additional info (Not needed for this environment)
         
         return observation, reward, terminated, truncated, info
