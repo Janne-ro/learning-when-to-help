@@ -8,5 +8,6 @@ rl_agent/__pycache__/
 rl_agent/visualizations/
 rl_agent/images/
 .vscode/
+node_modules/
 
 #currently uses openrouter api
