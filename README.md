@@ -1,6 +1,6 @@
 # Metacognitive Scaffolding and Reinforcement Learning
 
-This repository contains the code for my master thesis titled "Learning When to Help: A Reinforcement Learning Framework for Metacognitive AI Support in Education". The project explores the application of reinforcement learning to provide adaptive metacognitive scaffolding in educational settings based on pedagogical theory, helping students develop self-regulated learning skills.
+This repository contains the code for my master thesis titled "Learning When to Help: A Reinforcement Learning Framework for Metacognitive AI Support in Education". The project explores wheter a pedagogically steered policy can be learned via reinforcement learning to help students develop self-regulated learning skills, by timing the access to generative AI.
 
 ## Overview
 
@@ -112,19 +112,19 @@ The RL component contains the training and evaluation pipeline:
 
 ```
 rl_agent/
-├── bkt.py                 # Bayesian Knowledge Tracing implementation
-├── environment.py         # Custom RL environment
-├── compare_models.ipynb   # Model comparison notebook
+├── bkt.py                     # Bayesian Knowledge Tracing implementation
+├── environment.py             # Custom RL environment
+├── compare_models.ipynb       # Model comparison notebook
 ├── parameter estimation.ipynb # Parameter estimation analysis
-├── rl_agent_training.ipynb # Main training notebook
-├── ppo_policy.onnx        # Trained PPO model (ONNX format)
-├── models/                # Saved model checkpoints
-├── ppo_logs/              # TensorBoard logs for different runs
-│   ├── A2C_*/            # A2C algorithm training logs
-│   ├── DQN_*/            # DQN algorithm training logs
-│   └── PPO_*/            # PPO algorithm training logs
-├── visualizations/        # Analysis and visualization notebooks
-└── images/               # Generated plots and figures
+├── rl_agent_training.ipynb    # Main training notebook
+├── ppo_policy.onnx            # Trained PPO model (ONNX format)
+├── models/                    # Saved model checkpoints
+├── ppo_logs/                  # TensorBoard logs for different runs
+│   ├── A2C_*/                 # A2C algorithm training logs
+│   ├── DQN_*/                 # DQN algorithm training logs
+│   └── PPO_*/                 # PPO algorithm training logs
+├── visualizations/            # Analysis and visualization notebooks
+└── images/                    # Generated plots and figures
 ```
 
 ## Concurrently Used Ports
