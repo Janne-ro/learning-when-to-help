@@ -10,9 +10,11 @@
 
     <h4>Task 4: Answer the following questions:</h4>
 
-    <p>Like in previous tasks for each question 2 or 3 answers are correct. Each question is worth 1 point when answered correct and 0 points when answered false. You do not have access to AI assistance for this task.</p>
+    <p>Like in previous tasks for each question 2 or 3 answers are correct. You do not have access to AI assistance for this task.</p>
 
     <p>After submitting you will not be able to change your answers.</p>
+
+    <p>Additionally, please also indicate whether you think you answered the question correctly. It is completly acceptable if you think you answered wrongly.</p>
 
     <div ng-repeat="q in questions track by $index" ng-init="qIdx = $index" style="margin-bottom: 18px;">
 
@@ -27,6 +29,29 @@
                     {{opt}}
                 </md-checkbox>
             </div>
+        </div>
+
+        <!-- Self-assessment (confidence question) -->
+        <div style="margin-top: 12px; padding: 10px 14px; background-color: #f7f7f7; border-radius: 6px;">
+            <p style="margin: 0 0 6px 0; color: #555;">
+                <em>Do you think you answered this question correctly?</em>
+            </p>
+
+            <md-radio-group
+                ng-model="selfAssessment[qIdx]"
+                layout="row">
+                
+                <md-radio-button
+                    ng-value="1"
+                    style="margin-right: 16px;">
+                    Yes
+                </md-radio-button>
+
+                <md-radio-button
+                    ng-value="0">
+                    No
+                </md-radio-button>
+            </md-radio-group>
         </div>
 
         <!-- Subtle grey divider between questions -->

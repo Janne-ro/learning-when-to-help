@@ -103,6 +103,9 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
         }
     ];
 
+    //initialize self-assessment array
+    $scope.selfAssessment = new Array($scope.questions.length).fill(null);
+
     //initialize selected options
     $scope.selectedOptions = [];
     $scope.questions.forEach(function(q, i) {
@@ -141,19 +144,41 @@ app.controller('Task4Ctrl', function($scope, $sce, User, $location, $http, $time
     //submit all answers
     $scope.submitTask = function() {
 
-        //variable to count correct answers
+        //check that all self-assessment questions are answered
+        var allSelfAssessmentsAnswered = $scope.selfAssessment.every(function(x) {
+            return x === 0 || x === 1;
+        });
+
+        if (!allSelfAssessmentsAnswered) {
+            $scope.msg = "Please answer all self assessment tasks";
+            return;
+        }
+
+        //clear message if validation passes
+        $scope.msg = null;
+
+        //variable to count correct answers --> unused
         var correctCount = 0;
+
+        //variable to store correctness of each question
+        var correctnessArray = [];     
 
         //check each question for correctness
         $scope.questions.forEach(function(q, i) {
             if (isAnswerCorrect(i)){
                 correctCount++;
             }
+            //push corresponding value to correctness array
+            correctnessArray.push(isAnswerCorrect(i) ? 1 : 0);
         });
 
         console.log("Task 4 completed.");
-        User.setPerformanceSelfTask(correctCount);
         console.log("Number of correct answers:", correctCount);
+        console.log("Correctness array:", correctnessArray);
+        console.log("Self-assessment:", $scope.selfAssessment);
+
+        User.setPerformanceSelfTask(correctnessArray);
+        User.setSelfEvalScore($scope.selfAssessment);
 
         //set start time for posttest
         User.setStartTimePosttest(new Date().getTime());

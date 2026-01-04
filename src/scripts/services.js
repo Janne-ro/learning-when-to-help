@@ -55,9 +55,9 @@ tutorServices.service("User", function($http) {
         pre: [],
         post: [],
         //Self evaluation and performance for the last task
-        selfEvalScore: 0,
+        selfEvalScore: [],
         selfEvalReflection: "",
-        performanceSelfTask: 0
+        performanceSelfTask: []
     };
 
     //Getters and Setters

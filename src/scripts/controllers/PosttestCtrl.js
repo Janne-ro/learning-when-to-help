@@ -14,7 +14,7 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
 
     //track which section is currently visible
     $scope.selfAssessment = true;  
-    $scope.start = false;          
+    $scope.start = true;          
 
     //self-assessment data
     $scope.selfAssessmentScore = null;
@@ -38,8 +38,13 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
     ];
     $scope.answers = [];
 
+    //scroll to the top after loading page
+    $timeout(function () {
+        window.scrollTo(0, 0);
+    }, 0);
+
     //go from self-assessment to post-questionnaire if everything is filled out
-    $scope.goToPosttest = function() {
+    /*$scope.goToPosttest = function() {
         if ($scope.selfAssessmentScore === null) {
             $scope.msg = "Please rate how well you think you did.";
             return;
@@ -55,7 +60,7 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
         $scope.start = true;
 
         console.log(User.getResponse())
-    };
+    };*/
 
     //finish the session
     $scope.finsishSession = function() {
@@ -79,8 +84,13 @@ app.controller('PosttestCtrl', function($scope, $location, User) {
         console.log(User.getResponse());
 
         //prepare data for result screen
-        $scope.selfEvalScore = User.getSelfEvalScore();
-        $scope.performanceSelfTask = User.getPerformanceSelfTask();
+        $scope.selfEvalScore = User.getSelfEvalScore().reduce(function(acc, val) {
+            return acc + val;
+        }, 0);
+        
+        $scope.performanceSelfTask = User.getPerformanceSelfTask().reduce(function(acc, val) {
+            return acc + val;
+        }, 0);
 
         //transition to thank-you screen
         $scope.start = false;
