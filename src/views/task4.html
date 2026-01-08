@@ -20,7 +20,7 @@
 
         <md-divider ng-if="$first" style="width:95%; margin: 20px auto; background-color: #ccc; height: 1px;"></md-divider>
 
-        <p><strong>Q4.{{$index + 1}}: {{q.prompt}} (1 Point)</strong></p>
+        <p><strong>Q4.{{$index + 1}}: {{q.prompt}}</strong></p>
 
         <div>
             <div ng-repeat="opt in q.options track by $index" ng-init="optIdx = $index" style="margin:4px 0;">

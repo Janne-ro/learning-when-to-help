@@ -1,4 +1,4 @@
-app.controller('PosttestCtrl', function($scope, $location, User) { 
+app.controller('PosttestCtrl', function($scope, $location, User, $timeout) { 
 
     var testType = User.getTestType()
     //set the reflection message
