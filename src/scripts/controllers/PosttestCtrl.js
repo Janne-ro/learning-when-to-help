@@ -22,20 +22,26 @@ app.controller('PosttestCtrl', function($scope, $location, User, $timeout) {
     
     //Posttest questions (identical to pretest)
     $scope.questions = [
-        "How does the use of AI make you feel about your future career prospects?",
-        "How beneficial do you believe using AI is for the learning outcomes when studying?",
-        "I am aware of how AI usage affects my own thinking processes",
-        "I am conscious of how AI usage affects my memory and retention of information",
-        "I am aware of when I use AI to avoid challenging cognitive tasks",
-        "I am aware of how much I rely on AI while working on academic tasks",
-        "I can recognize when AI usage enhances versus hinders my learning",
-        "I decide how to approach a problem on my own before I ask an AI for a solution",
-        "I focus on understanding the information an AI tool provides, not just on getting an answer",
-        "I verify the accuracy of AI outputs before using them",
-        "If an AI tool gives me incorrect or unclear information, I try to solve the task on my own",
-        "After completing a task with AI, I evaluate what I have learned versus what the AI did for me",
-        "After completing a task with AI, I ask myself If I could have accomplished the task more effectively without using an AI tool"
-    ];
+        "I know which knowledge I need to deeply understand by myself versus what I can retrieve from AI when needed.",
+        "I understand what I'm expected to genuinely learn versus what I'm expected to produce with AI assistance.",
+        "I recognize that how much I learn depends on how I engage with AI, not just whether I use it.",
+        "I am a good judge of whether I truly understand something or whether AI has done the thinking for me.",
+        "I am aware of which learning strategies work best with AI and which work best without it.",
+        "I have developed good habits for using AI in ways that support my learning.",
+        "I can motivate myself to work through challenging material before turning to AI.",
+        "I can recognize when using AI would help my learning versus when it would hinder it.",
+        "Before starting a task with AI, I think about what I personally need to learn from it.",
+        "I set learning goals for myself, not just task completion goals, when working with AI.",
+        "I rephrase AI-generated explanations in my own words to make sure I understand them.",
+        "I engage with the reasoning and structure behind AI-provided answers, not just the final answer.",
+        "I consider how AI-provided information connects to what I already know.",
+        "While using AI, I pause to check whether I'm genuinely understanding the material.",
+        "After completing a task with AI, I reflect on what I actually learned myself.",
+        "After finishing a task with AI, I ask myself whether I learned as much as I could have.",
+        "When AI explanations don't help me understand, I try alternative prompts or approaches like working through it myself.",
+        "When I'm confused while using AI, I reconsider my own understanding rather than just reprompting.",
+        "When something AI provides is unclear, I work through it myself rather than just asking AI to explain again."
+        ];
     $scope.answers = [];
 
     //scroll to the top after loading page
