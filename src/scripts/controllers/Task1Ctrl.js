@@ -12,7 +12,7 @@ app.controller('Task1Ctrl', function($scope, $sce, User, $location, $http, $time
     //Force single threat to be able to run in browser
     ort.env.wasm.numThreads = 1;
     ort.env.wasm.simd = false;
-    ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/';
+    ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.24.1/dist/';
 
     //Define needed variables for RL agent
     let onnxSession = null;

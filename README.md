@@ -1,6 +1,7 @@
 # Metacognitive Scaffolding and Reinforcement Learning
 
-This repository contains the code for my master thesis titled "Learning When to Help: A Reinforcement Learning Framework for Metacognitive AI Support in Education". The project explores wheter a pedagogically steered policy can be learned via reinforcement learning to help students develop self-regulated learning skills, by timing the access to generative AI.
+This repository contains the code for my master thesis titled "Learning When to Help: Timed Generative AI Access Improves Learning
+Over Unrestricted and Withheld Assistance in Higher Education". The project explores wheter a pedagogically steered policy, learned via reinforcement learning, that times the access to generative AI can improve the way university students learn and develop self-regulated learning skills.
 
 ## Overview
 
@@ -40,7 +41,7 @@ The system implements a dual-storage approach to mitgate data loss:
 The reinforcement learning pipeline follows a comprehensive approach from knowledge modeling to deployment:
 
 ### 1. Bayesian Knowledge Tracing (BKT) with Extensions
-- **Foundation**: Starts with BKT, a probabilistic model for tracking student knowledge states over time.
+- **Foundation**: Primarily relys on BKT, a probabilistic model for tracking student knowledge states over time.
 - **Extensions**: Uses KT-IDEM and multiple retake extansions as fitting for the given task
 
 ### 2. Custom Environment Development
@@ -67,7 +68,7 @@ The reinforcement learning pipeline follows a comprehensive approach from knowle
 - **Domain Adaptation**: Fine-tuning models on domain-specific data to improve performance in educational contexts.
 
 ### 5. Experimentation and Reward Parameter Tuning
-- **Reward Function Design**: Iterative refinement of reward structures to lead to desired agent behaviour.
+- **Reward Function Design**: Iterative refinement of reward structures to lead to agent behaviour in line with participant desires.
 - **Validation**: Cross-validation with simulated datasets and pilot study.
 
 ## Project Structure
@@ -81,28 +82,27 @@ src/
 ├── assets/                 # Static assets (images, fonts, etc.)
 ├── scripts/
 │   ├── app.js              # Main application entry point
-│   ├── server.js           # Express server configuration
-│   ├── services.js         # Business logic and API integrations
+│   ├── server.js           # Express server configuration and API integration
+│   ├── services.js         # Business logic and data logging
 │   └── controllers/        # Route handlers for different pages
-│       ├── GateCtrl.js     # Landing/gate page controller
+│       ├── GateCtrl.js     # Distractor task/password gate controller
 │       ├── PretestCtrl.js  # Pre-test assessment controller
 │       ├── Task1Ctrl.js    # Learning task 1 controller
 │       ├── Task2Ctrl.js    # Learning task 2 controller
 │       ├── Task3Ctrl.js    # Learning task 3 controller
-│       ├── Task4Ctrl.js    # Learning task 4 controller
+│       ├── Task4Ctrl.js    # Unassisted post-intervention task controller
 │       └── PosttestCtrl.js # Post-test assessment controller
 ├── styles/
 │   └── styles.css         # Application stylesheets
-├── templates/             # HTML templates for forms
-│   ├── consent.html       # User consent form
+├── templates/             # Early copys of templates
 │   └── demographics.html  # Demographic information collection
 └── views/                 # Main page views
-    ├── gate.html          # Landing page
+    ├── gate.html          # Distractor task/password gate
     ├── pretest.html       # Pre-test interface
     ├── task1.html         # Task 1 interface
     ├── task2.html         # Task 2 interface
     ├── task3.html         # Task 3 interface
-    ├── task4.html         # Task 4 interface
+    ├── task4.html         # Unassisted post-intervention task
     └── posttest.html      # Post-test interface
 ```
 
@@ -115,7 +115,7 @@ rl_agent/
 ├── bkt.py                     # Bayesian Knowledge Tracing implementation
 ├── environment.py             # Custom RL environment
 ├── compare_models.ipynb       # Model comparison notebook
-├── parameter estimation.ipynb # Parameter estimation analysis
+├── parameter estimation.ipynb # Parameter estimation analysis from first pilot
 ├── rl_agent_training.ipynb    # Main training notebook
 ├── ppo_policy.onnx            # Trained PPO model (ONNX format)
 ├── models/                    # Saved model checkpoints
@@ -151,9 +151,6 @@ rl_agent/
 
 The application will start all three servers concurrently, making the frontend available at `http://localhost:3000`.
 
-## Development Status
-
-This project is currently in active development as part of a master thesis. Features may be added or modified as research progresses.
 
 ## License
 
