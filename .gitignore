@@ -8,3 +8,4 @@ rl_agent/__pycache__/
 rl_agent/visualizations/
 rl_agent/images/
 .vscode/
+rl_agent/anonymized_data.csv
