@@ -1,7 +1,7 @@
 # Metacognitive Scaffolding and Reinforcement Learning
 
 This repository contains the code for the paper titled "Access Timing as Scaffolding: A Reinforcement Learning Approach
-to GenAI in Education". The project explores wheter a pedagogically steered policy, learned via reinforcement learning, that times the access to generative AI can improve the way university students learn and develop self-regulated learning skills.
+to GenAI in Education". The project explores wheter a pedagogically steered policy, learned via reinforcement learning, that times the access to generative AI can improve the way university students learn and develop metacognitive skills.
 
 ## Overview
 
